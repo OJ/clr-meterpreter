@@ -1,3 +1,9 @@
+# Original Implementation
+
+The legend that is [Skape](https://twitter.com/epakskape) first implemented the TLV protocol back in 2004. For a good write up on that, and more, check out his [whitepaper](https://dev.metasploit.com/documents/meterpreter.pdf).
+
+# Current Implementation
+
 Single TLV:
 
 ```
@@ -26,3 +32,4 @@ ENCRYPTED DATA = [L][T][{  TLVs  }]
 [    XOR KEY   ][ SESSION GUID ][ ENCRYPTION FLAGS ][ LENGTH ][  Init Vec ][ ENCRYPTED DATA ]
                 [               THIS IS XORED                                               ]
 ```
+
