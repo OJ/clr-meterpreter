@@ -31,3 +31,9 @@ The kick off stream! Classic introduction stuff, and covering off high level dis
 Answered viewer questions, gave an overview of MSF and Meterpreter, and covered off what TLV packets look like. Shorter stream because of ANZAC day.
 
 [Notes](../master/streams/2019-04-25-Part-2/notes.md) - [TLV Structure](../master/streams/2019-04-25-Part-2/tlv.md) - [Vimeo](https://vimeo.com/332426022) - [YouTube](https://youtu.be/-nUfhW5d_Nc)
+
+### Part 3 - 27 April 2019 @ 20:00 AEST
+
+Spoke about dev issues such as permature optimsation, future proofing and more. Covered off some legality points, and spoke in depth about what we're going to do support multiple versions of the CLR.
+
+[Notes](../master/streams/2019-04-27-Part-3/notes.md) - [Agenda](../master/streams/2019-04-27-Part-3/agenda.md) - [Version](../master/streams/2019-04-27-Part-3/version.md) - [Vimeo](https://vimeo.com/332827701) - [YouTube](https://youtu.be/fgMdviZkew8)
