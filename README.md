@@ -37,3 +37,9 @@ Answered viewer questions, gave an overview of MSF and Meterpreter, and covered 
 Spoke about dev issues such as permature optimsation, future proofing and more. Covered off some legality points, and spoke in depth about what we're going to do support multiple versions of the CLR.
 
 [Notes](../master/streams/2019-04-27-Part-3/notes.md) - [Agenda](../master/streams/2019-04-27-Part-3/agenda.md) - [Version](../master/streams/2019-04-27-Part-3/version.md) - [Vimeo](https://vimeo.com/332827701) - [YouTube](https://youtu.be/fgMdviZkew8)
+
+### Part 4 - 29 April 2019 @ 20:00 AEST
+
+Quickly recap'd stuff. Got started on project structure and wrote some awful, awful code. Good to get started though! Once we've figured out the vibe, we'll start moving faster.
+
+[Agenda](../master/streams/2019-04-29-Part-4/agenda.md) - [Vimeo](https://vimeo.com/333091819) - [YouTube](https://youtu.be/xlmqqVq2Pek)
