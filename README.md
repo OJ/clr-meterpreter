@@ -43,3 +43,9 @@ Spoke about dev issues such as permature optimsation, future proofing and more. 
 Quickly recap'd stuff. Got started on project structure and wrote some awful, awful code. Good to get started though! Once we've figured out the vibe, we'll start moving faster.
 
 [Agenda](../master/streams/2019-04-29-Part-4/agenda.md) - [Vimeo](https://vimeo.com/333091819) - [YouTube](https://youtu.be/xlmqqVq2Pek)
+
+### Part 5 - 1 may 2019 @ 20:00 AEST
+
+Code! All the code. Got the TLV packet parsing first pass done. We can read TLV data from byte arrays and interact with the values.
+
+[Agenda](../master/streams/2019-05-01-Part-5/agenda.md) - [Vimeo](https://vimeo.com/333532147) - [YouTube](https://youtu.be/H31LdXAsC2M)
