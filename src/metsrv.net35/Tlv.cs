@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace Met.Core
@@ -115,7 +116,7 @@ namespace Met.Core
                 {
                     while (!groupReader.IsFinished())
                     {
-                        Add(new Tlv(reader));
+                        Add(new Tlv(groupReader));
                     }
                 }
             }
@@ -141,7 +142,7 @@ namespace Met.Core
                         }
                     case MetaType.String:
                         {
-                            this.value = Encoding.UTF8.GetString(reader.ReadBytes((int)length)).TrimEnd('\0');
+                            this.value = reader.ReadString((int)length);
                             break;
                         }
                     case MetaType.Uint:
@@ -163,8 +164,168 @@ namespace Met.Core
             }
         }
 
-        public void Add(Tlv tlv)
+        public void ToRaw(BinaryWriter writer)
         {
+            var metaType = this.Type.ToMetaType();
+            if (metaType == MetaType.Group)
+            {
+                var tlvData = default(byte[]);
+
+                using (var tlvStream = new MemoryStream())
+                using (var tlvWriter = new BinaryWriter(tlvStream))
+                {
+                    foreach (var tlv in this.Tlvs.Values.AsEnumerable().Flatten())
+                    {
+                        tlv.ToRaw(tlvWriter);
+                    }
+                    tlvData = tlvStream.ToArray();
+                }
+
+                writer.WriteDword((UInt32)tlvData.Length + 8u);
+                writer.WriteTlvType(this.Type);
+                writer.Write(tlvData);
+            }
+            else
+            {
+                switch (metaType)
+                {
+                    case MetaType.Bool:
+                        {
+                            writer.WriteDword(1u + 8u);
+                            writer.WriteTlvType(this.Type);
+                            writer.Write(this.ValueAsBool());
+                            break;
+                        }
+                    case MetaType.Uint:
+                        {
+                            writer.WriteDword(4u + 8u);
+                            writer.WriteTlvType(this.Type);
+                            writer.WriteDword(this.ValueAsDword());
+                            break;
+                        }
+                    case MetaType.Qword:
+                        {
+                            writer.WriteDword(8u + 8u);
+                            writer.WriteTlvType(this.Type);
+                            writer.WriteQword(this.ValueAsQword());
+                            break;
+                        }
+                    case MetaType.String:
+                        {
+                            var val = this.ValueAsString();
+                            writer.WriteDword((UInt32)val.Length + 1u + 8u);
+                            writer.WriteTlvType(this.Type);
+                            writer.WriteString(val);
+                            break;
+                        }
+                    case MetaType.Raw:
+                        {
+                            var val = this.ValueAsRaw();
+                            writer.WriteDword((UInt32)val.Length + 8u);
+                            writer.WriteTlvType(this.Type);
+                            writer.Write(val);
+                            break;
+                        }
+                    case MetaType.None:
+                    case MetaType.Complex:
+                    case MetaType.Compressed:
+                        {
+                            throw new NotImplementedException(string.Format("Sorry, don't support {0} yet", metaType));
+                        }
+                    default:
+                        {
+                            throw new ArgumentException(string.Format("Unexpected MetaType {0}", metaType));
+                        }
+                }
+            }
+        }
+
+        public Tlv(TlvType type, string value)
+            : this()
+        {
+            this.Type = type;
+            this.value = value;
+            ValidateMetaType(MetaType.String);
+        }
+
+        public Tlv(TlvType type, UInt32 value)
+            : this()
+        {
+            this.Type = type;
+            this.value = value;
+            ValidateMetaType(MetaType.Uint);
+        }
+
+        public Tlv(TlvType type, UInt64 value)
+            : this()
+        {
+            this.Type = type;
+            this.value = value;
+            ValidateMetaType(MetaType.Qword);
+        }
+
+        public Tlv(TlvType type, byte[] value)
+            : this()
+        {
+            this.Type = type;
+            this.value = value;
+            ValidateMetaType(MetaType.Raw);
+        }
+
+        public Tlv(TlvType type, bool value)
+            : this()
+        {
+            this.Type = type;
+            this.value = value;
+            ValidateMetaType(MetaType.Bool);
+        }
+
+        public Tlv(TlvType type)
+            : this()
+        {
+            this.Type = type;
+        }
+
+        public Tlv Add(TlvType type, string value)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, bool value)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, byte[] value)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, UInt32 value)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, UInt64 value)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv AddGroup(TlvType type)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type));
+        }
+
+        public Tlv Add(Tlv tlv)
+        {
+            ValidateMetaType(MetaType.Group);
+
             var tlvs = default(List<Tlv>);
 
             if (this.Tlvs.TryGetValue(tlv.Type, out tlvs))
@@ -175,6 +336,8 @@ namespace Met.Core
             {
                 this.Tlvs.Add(tlv.Type, new List<Tlv> { tlv });
             }
+
+            return tlv;
         }
 
         public string ValueAsString()
@@ -228,6 +391,14 @@ namespace Met.Core
             return s.ToString();
         }
 #endif
+
+        private void ValidateMetaType(MetaType expectedType)
+        {
+            if (this.Type.ToMetaType() != expectedType)
+            {
+                throw new InvalidOperationException(string.Format("Expecting MetaType {0} but provided type {1}", expectedType, this.Type));
+            }
+        }
 
         private void ValidateType<T>()
         {

@@ -49,3 +49,9 @@ Quickly recap'd stuff. Got started on project structure and wrote some awful, aw
 Code! All the code. Got the TLV packet parsing first pass done. We can read TLV data from byte arrays and interact with the values.
 
 [Agenda](../master/streams/2019-05-01-Part-5/agenda.md) - [Vimeo](https://vimeo.com/333532147) - [YouTube](https://youtu.be/H31LdXAsC2M)
+
+### Part 6 - 3 may 2019 @ 20:00 AEST
+
+More code this time! We did the deserialisation part of the TLV handling. So we should have "serder" done well enough to move up a level and start preparing the server in the next stream.
+
+[Agenda](../master/streams/2019-05-03-Part-6/agenda.md) - [Vimeo](https://vimeo.com/333959033) - [YouTube](https://youtu.be/B7byAySiK3s)

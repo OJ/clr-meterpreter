@@ -77,6 +77,22 @@ namespace TestConsole.net35
                 var packet = new Packet(d);
                 Console.WriteLine(packet.ToString());
             }
+
+            var request = new Packet(data[0]);
+            var response = request.CreateResponse();
+            response.Add(TlvType.EncSymKey, new byte[] { 1, 2, 3, 4 });
+            response.Add(TlvType.ChannelId, 10u);
+
+            var group = response.AddGroup(TlvType.TransGroup);
+            group.Add(TlvType.TransUrl, "https://foo.com/bar");
+            group.Add(TlvType.TransRetryWait, 40u);
+            group.Add(TlvType.TransRetryTotal, 360u);
+
+            var packetData = response.ToRaw(new byte[16] {
+                0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+            });
+
+            var deserialisedPacket = new Packet(packetData);
         }
     }
 }

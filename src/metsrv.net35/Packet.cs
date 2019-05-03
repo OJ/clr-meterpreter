@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
 
 namespace Met.Core
@@ -16,8 +18,32 @@ namespace Met.Core
     public class Packet
     {
         private PacketType type;
+        private RNGCryptoServiceProvider random = null;
 
         public Dictionary<TlvType, List<Tlv>> Tlvs { get; private set; }
+
+        public string RequestId
+        {
+            get { return this.Tlvs[TlvType.RequestId].First().ValueAsString(); }
+        }
+
+        public string Method
+        {
+            get { return this.Tlvs[TlvType.Method].First().ValueAsString(); }
+        }
+
+        private RNGCryptoServiceProvider Random
+        {
+            get
+            {
+                if (this.random == null)
+                {
+                    this.random = new RNGCryptoServiceProvider();
+                }
+
+                return this.random;
+            }
+        }
 
         private Packet()
         {
@@ -33,7 +59,94 @@ namespace Met.Core
             ParseData(ref data);
         }
 
-        public void Add(Tlv tlv)
+        public byte[] ToRaw(byte[] sessionGuid)
+        {
+            var packetData = default(byte[]);
+            using (var packetStream = new MemoryStream())
+            using (var writer = new BinaryWriter(packetStream))
+            {
+                var tlvData = default(byte[]);
+
+                using (var tlvStream = new MemoryStream())
+                using (var tlvWriter = new BinaryWriter(tlvStream))
+                {
+                    foreach (var tlv in this.Tlvs.Values.AsEnumerable().Flatten())
+                    {
+                        tlv.ToRaw(tlvWriter);
+                    }
+                    tlvData = tlvStream.ToArray();
+                }
+
+                // Write a zero XOR key
+                writer.WriteDword(0u);
+
+                // Write a blank session GUID
+                writer.Write(sessionGuid);
+
+                // Write ENC_NONE as the encryption flags
+                writer.WriteDword(0u);
+
+                // Specify the TLV data length
+                writer.WriteDword((UInt32)tlvData.Length + 8u);
+
+                // Specify the type
+                writer.WritePacketType(this.type);
+
+                writer.Write(tlvData);
+
+                packetData = packetStream.ToArray();
+            }
+
+            var xorKey = GenerateXorKey();
+            XorBytes(xorKey, ref packetData);
+
+            return packetData;
+        }
+
+        public Packet CreateResponse()
+        {
+            var response = new Packet
+            {
+                type = this.type == PacketType.Request ? PacketType.Response : PacketType.PlainResponse,
+            };
+
+            response.Add(TlvType.RequestId, this.RequestId);
+            response.Add(TlvType.Method, this.Method);
+
+            return response;
+        }
+
+        public Tlv Add(TlvType type, string value)
+        {
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, bool value)
+        {
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, byte[] value)
+        {
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, UInt32 value)
+        {
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, UInt64 value)
+        {
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv AddGroup(TlvType type)
+        {
+            return this.Add(new Tlv(type));
+        }
+
+        public Tlv Add(Tlv tlv)
         {
             var tlvs = default(List<Tlv>);
 
@@ -45,6 +158,8 @@ namespace Met.Core
             {
                 this.Tlvs.Add(tlv.Type, new List<Tlv> { tlv });
             }
+
+            return tlv;
         }
 
 #if DEBUG
@@ -86,6 +201,13 @@ namespace Met.Core
             {
                 target[i] ^= xorKey[i % xorKey.Length];
             }
+        }
+
+        private byte[] GenerateXorKey()
+        {
+            var bytes = new byte[4];
+            this.Random.GetBytes(bytes);
+            return bytes;
         }
     }
 }
