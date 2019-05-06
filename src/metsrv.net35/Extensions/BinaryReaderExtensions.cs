@@ -1,26 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 
-namespace Met.Core
+using Met.Core.Proto;
+
+namespace Met.Core.Extensions
 {
-    public static class IEnumerableExtensions
-    {
-        // [ [ 1, 2, 3 ], [ 4, 5, 6 ] ] => [ 1, 2, 3, 4, 5, 6 ]
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<IEnumerable<T>> elements)
-        {
-            return elements.SelectMany(x => x);
-        }
-
-        public static IEnumerable<T> Flatten<T>(this IEnumerable<List<T>> elements)
-        {
-            return elements.SelectMany(x => x);
-        }
-    }
-
     public static class BinaryReaderExtensions
     {
         public static bool IsFinished(this BinaryReader reader)
@@ -41,6 +27,11 @@ namespace Met.Core
         public static string ReadString(this BinaryReader reader, int length)
         {
             return Encoding.UTF8.GetString(reader.ReadBytes(length)).TrimEnd('\0');
+        }
+
+        public static string ReadWideString(this BinaryReader reader, int length)
+        {
+            return Encoding.Unicode.GetString(reader.ReadBytes(length * 2)).TrimEnd('\0');
         }
 
         public static TlvType ReadTlvType(this BinaryReader reader)

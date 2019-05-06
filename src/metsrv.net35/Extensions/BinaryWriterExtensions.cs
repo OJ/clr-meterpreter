@@ -3,7 +3,9 @@ using System.IO;
 using System.Net;
 using System.Text;
 
-namespace Met.Core
+using Met.Core.Proto;
+
+namespace Met.Core.Extensions
 {
     public static class BinaryWriterExtensions
     {

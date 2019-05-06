@@ -5,7 +5,9 @@ using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace Met.Core
+using Met.Core.Extensions;
+
+namespace Met.Core.Proto
 {
     public enum PacketType : UInt32
     {

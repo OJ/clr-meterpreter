@@ -38,12 +38,18 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BinaryReaderExtensions.cs" />
-    <Compile Include="BinaryWriterExtensions.cs" />
-    <Compile Include="EnumExtensions.cs" />
-    <Compile Include="Packet.cs" />
+    <Compile Include="Extensions\BinaryReaderExtensions.cs" />
+    <Compile Include="Extensions\BinaryWriterExtensions.cs" />
+    <Compile Include="Extensions\EnumExtensions.cs" />
+    <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Proto\Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tlv.cs" />
+    <Compile Include="Proto\Tlv.cs" />
+    <Compile Include="Server.cs" />
+    <Compile Include="Session.cs" />
+    <Compile Include="Trans\ITransport.cs" />
+    <Compile Include="Trans\TcpTransport.cs" />
+    <Compile Include="Trans\TransportConfig.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

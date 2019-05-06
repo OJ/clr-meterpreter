@@ -55,3 +55,9 @@ Code! All the code. Got the TLV packet parsing first pass done. We can read TLV 
 More code this time! We did the deserialisation part of the TLV handling. So we should have "serder" done well enough to move up a level and start preparing the server in the next stream.
 
 [Agenda](../master/streams/2019-05-03-Part-6/agenda.md) - [Vimeo](https://vimeo.com/333959033) - [YouTube](https://youtu.be/B7byAySiK3s)
+
+### Part 7 - 6 may 2019 @ 20:00 AEST
+
+Rejigged some source structure, got started on parsing configuration coming from MSF during staging.
+
+[Agenda](../master/streams/2019-05-06-Part-7/agenda.md) - [Vimeo](https://vimeo.com/334419549) - [YouTube](https://youtu.be/TowwCK1k8Dw)

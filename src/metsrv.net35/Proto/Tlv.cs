@@ -4,7 +4,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 
-namespace Met.Core
+using Met.Core.Extensions;
+
+namespace Met.Core.Proto
 {
     public enum MetaType : UInt32
     {

@@ -1,4 +1,6 @@
-﻿namespace Met.Core
+﻿using Met.Core.Proto;
+
+namespace Met.Core.Extensions
 {
     public static class EnumExtensions
     {
