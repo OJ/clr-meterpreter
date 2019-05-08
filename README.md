@@ -61,3 +61,9 @@ More code this time! We did the deserialisation part of the TLV handling. So we 
 Rejigged some source structure, got started on parsing configuration coming from MSF during staging.
 
 [Agenda](../master/streams/2019-05-06-Part-7/agenda.md) - [Vimeo](https://vimeo.com/334419549) - [YouTube](https://youtu.be/TowwCK1k8Dw)
+
+### Part 8 - 8 may 2019 @ 20:00 AEST
+
+Finished configuration parsing, explored the staging process and got started on plugin management.
+
+[Agenda](../master/streams/2019-05-08-Part-8/agenda.md) - [Notes](../master/streams/2019-05-08-Part-8/notes.md) - [Vimeo](https://vimeo.com/334881806) - [YouTube](https://youtu.be/OPbWiG9ETI8)

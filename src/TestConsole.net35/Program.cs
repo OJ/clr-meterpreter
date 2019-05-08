@@ -4,6 +4,8 @@ using Met.Core.Trans;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Sockets;
+using System.Reflection;
 
 namespace TestConsole.net35
 {
@@ -11,7 +13,27 @@ namespace TestConsole.net35
     {
         static void Main(string[] args)
         {
-            ConfigTest();
+        }
+
+        static void SimpleTcpStageTest()
+        {
+            var tcpClient = new TcpClient();
+            tcpClient.Connect("192.168.20.171", 4444);
+            if (tcpClient.Connected)
+            {
+                using (var s = tcpClient.GetStream())
+                using (var r = new BinaryReader(s))
+                {
+                    var metSrvSize = r.ReadInt32();
+
+                    // TODO: read the bytes into memory and load
+                    var metSrvBytes = r.ReadBytes(metSrvSize);
+                    //var asm = Assembly.Load(metSrvBytes);
+                    //var metType = asm.GetType("Met.Core.Server");
+                    // create an instance of it.
+                    var metSrv = new Server(r);
+                }
+            }
         }
 
         static void ConfigTest()

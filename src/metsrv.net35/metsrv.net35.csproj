@@ -42,6 +42,8 @@
     <Compile Include="Extensions\BinaryWriterExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="IPlugin.cs" />
+    <Compile Include="PluginManager.cs" />
     <Compile Include="Proto\Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Proto\Tlv.cs" />
