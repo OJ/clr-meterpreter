@@ -49,6 +49,7 @@
     <Compile Include="Proto\Tlv.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Session.cs" />
+    <Compile Include="Trans\HttpTransport.cs" />
     <Compile Include="Trans\ITransport.cs" />
     <Compile Include="Trans\TcpTransport.cs" />
     <Compile Include="Trans\TransportConfig.cs" />

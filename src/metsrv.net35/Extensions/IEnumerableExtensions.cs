@@ -15,5 +15,16 @@ namespace Met.Core.Extensions
         {
             return elements.SelectMany(x => x);
         }
+
+        public static IEnumerable<T> Cycle<T>(this IEnumerable<T> elements)
+        {
+            while (true)
+            {
+                foreach (var e in elements)
+                {
+                    yield return e;
+                }
+            }
+        }
     }
 }

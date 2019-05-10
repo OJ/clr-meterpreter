@@ -67,3 +67,9 @@ Rejigged some source structure, got started on parsing configuration coming from
 Finished configuration parsing, explored the staging process and got started on plugin management.
 
 [Agenda](../master/streams/2019-05-08-Part-8/agenda.md) - [Notes](../master/streams/2019-05-08-Part-8/notes.md) - [Vimeo](https://vimeo.com/334881806) - [YouTube](https://youtu.be/OPbWiG9ETI8)
+
+### Part 9 - 10 may 2019 @ 20:00 AEST
+
+Add full HTTP transport parsing, started work on the server transport handling and packet dispatching.
+
+[Agenda](../master/streams/2019-05-10-Part-9/agenda.md) - [Vimeo](https://vimeo.com/335392126) - [YouTube](https://youtu.be/iUrlJOhbQl4)
