@@ -13,7 +13,7 @@ namespace TestConsole.net35
     {
         static void Main(string[] args)
         {
-            ConfigTest();
+            SimpleTcpStageTest();
         }
 
         static void SimpleTcpStageTest()
@@ -25,15 +25,24 @@ namespace TestConsole.net35
                 using (var s = tcpClient.GetStream())
                 using (var r = new BinaryReader(s))
                 {
-                    var metSrvSize = r.ReadInt32();
+                    var fullStageSize = r.ReadInt32();
+                    var fullStage = r.ReadBytes(fullStageSize);
 
-                    // TODO: read the bytes into memory and load
-                    var metSrvBytes = r.ReadBytes(metSrvSize);
-                    //var asm = Assembly.Load(metSrvBytes);
-                    //var metType = asm.GetType("Met.Core.Server");
-                    // create an instance of it.
-                    var metSrv = new Server(r);
-                    metSrv.Run(tcpClient);
+                    using (var memStream = new MemoryStream(fullStage))
+                    using (var memReader = new BinaryReader(memStream))
+                    {
+                        // skip over the MZ header
+                        memReader.ReadBytes(2);
+                        // read in the length of metsrv
+                        var metSrvSize = memReader.ReadInt32();
+                        // Point the reader to the configuration
+                        memReader.BaseStream.Seek(metSrvSize, SeekOrigin.Begin);
+
+                        var assembly = Assembly.Load(fullStage);
+                        var type = assembly.GetType("Met.Core.Server");
+                        type.InvokeMember("Bootstrap", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
+                            null, null, new object[] { memReader, tcpClient });
+                    }
                 }
             }
         }

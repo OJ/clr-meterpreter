@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System;
-using System.Text;
 using Met.Core.Extensions;
 using System.Linq;
 using System.Threading;
@@ -33,6 +32,18 @@ namespace Met.Core
 
             this.currentTransport = this.Transports.First();
             this.transportIndex = 0;
+        }
+
+        public static void Bootstrap(BinaryReader reader, TcpClient tcpClient)
+        {
+            var metSrv = new Server(reader);
+            metSrv.Run(tcpClient);
+        }
+
+        public static void Bootstrap(BinaryReader reader)
+        {
+            var metSrv = new Server(reader);
+            metSrv.Run();
         }
 
         public void Run(TcpClient tcpClient)
