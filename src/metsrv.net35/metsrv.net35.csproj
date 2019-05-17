@@ -55,4 +55,7 @@
     <Compile Include="Trans\TransportConfig.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /y $(TargetPath) Z:\scratch\</PostBuildEvent>
+  </PropertyGroup>
 </Project>

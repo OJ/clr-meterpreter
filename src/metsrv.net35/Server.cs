@@ -13,12 +13,14 @@ namespace Met.Core
     {
         private ITransport currentTransport;
         private int transportIndex;
+        private PluginManager pluginManager;
 
         private Session Session { get; set; }
         private List<ITransport> Transports { get; set; }
 
         private Server()
         {
+            this.pluginManager = new PluginManager();
             this.Transports = new List<ITransport>();
         }
 
@@ -81,12 +83,32 @@ namespace Met.Core
                         continue;
                     }
 
-                    var packet = this.currentTransport.GetPacket();
+                    PacketDispatchLoop();
                 }
             }
             catch (TimeoutException)
             {
                 // the session has timed out, clean up and shut down
+            }
+        }
+
+        private void PacketDispatchLoop()
+        {
+            while (true)
+            {
+                var request = this.currentTransport.ReceivePacket();
+                if (request != null)
+                {
+                    var response = this.pluginManager.InvokeHandler(request);
+                    if (response != null)
+                    {
+                        this.currentTransport.SendPacket(response);
+                    }
+                }
+                else
+                {
+                    break;
+                }
             }
         }
 
@@ -103,7 +125,7 @@ namespace Met.Core
             while (reader.PeekChar() != 0)
             {
                 var transportConfig = new TransportConfig(reader);
-                var transport = transportConfig.CreateTransport();
+                var transport = transportConfig.CreateTransport(this.Session);
                 transport.Configure(reader);
                 this.Transports.Add(transport);
             }

@@ -17,24 +17,24 @@ namespace Met.Core.Trans
 
         public TransportConfig(BinaryReader reader)
         {
-            this.Url = reader.ReadWideString(512);
+            this.Url = reader.ReadWideString(URL_SIZE);
             this.CommsTimeout = reader.ReadUInt32();
             this.RetryTotal = reader.ReadUInt32();
             this.RetryWait = reader.ReadUInt32();
             this.Uri = new Uri(this.Url);
         }
 
-        public ITransport CreateTransport()
+        public ITransport CreateTransport(Session session)
         {
-            switch (this.Url.Split(':')[0].ToLowerInvariant())
+            switch (this.Uri.Scheme.ToLower())
             {
                 case "tcp":
                     {
-                        return new TcpTransport(this);
+                        return new TcpTransport(this, session);
                     }
                 case "http":
                     {
-                        return new HttpTransport(this);
+                        return new HttpTransport(this, session);
                     }
                 default:
                     {

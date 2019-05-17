@@ -42,11 +42,5 @@
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\metsrv.net35\metsrv.net35.csproj">
-      <Project>{e05d0deb-d724-4448-8c4c-53d6a8e670f3}</Project>
-      <Name>metsrv.net35</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

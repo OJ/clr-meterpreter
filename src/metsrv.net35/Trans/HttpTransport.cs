@@ -13,6 +13,8 @@ namespace Met.Core.Trans
         private const int PROXY_PASS_SIZE = 64;
         private const int CERT_HASH_SIZE = 20;
 
+        private Session session;
+
         public TransportConfig Config { get; private set; }
         public string ProxyHost { get; private set; }
         public string ProxyUser { get; private set; }
@@ -23,9 +25,10 @@ namespace Met.Core.Trans
 
         public bool IsConnected => true;
 
-        public HttpTransport(TransportConfig config)
+        public HttpTransport(TransportConfig config, Session session)
         {
             this.Config = config;
+            this.session = session;
         }
 
         public void Configure(BinaryReader reader)
@@ -48,7 +51,12 @@ namespace Met.Core.Trans
         {
         }
 
-        public Packet GetPacket()
+        public Packet ReceivePacket()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SendPacket(Packet response)
         {
             throw new NotImplementedException();
         }

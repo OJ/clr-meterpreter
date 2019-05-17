@@ -1,6 +1,6 @@
-﻿using Met.Core;
-using Met.Core.Proto;
-using Met.Core.Trans;
+﻿//using Met.Core;
+//using Met.Core.Proto;
+//using Met.Core.Trans;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -19,7 +19,7 @@ namespace TestConsole.net35
         static void SimpleTcpStageTest()
         {
             var tcpClient = new TcpClient();
-            tcpClient.Connect("192.168.20.171", 4444);
+            tcpClient.Connect("192.168.146.128", 4444);
             if (tcpClient.Connected)
             {
                 using (var s = tcpClient.GetStream())
@@ -269,7 +269,7 @@ namespace TestConsole.net35
                 using (var memStream = new MemoryStream(d))
                 using (var reader = new BinaryReader(memStream))
                 {
-                    var server = new Server(reader);
+                    //var server = new Server(reader);
                 }
             }
         }
@@ -342,23 +342,23 @@ namespace TestConsole.net35
 
             foreach (var d in data)
             {
-                var packet = new Packet(d);
-                Console.WriteLine(packet.ToString());
+                //var packet = new Packet(d);
+                //Console.WriteLine(packet.ToString());
             }
 
-            var request = new Packet(data[0]);
-            var response = request.CreateResponse();
-            response.Add(TlvType.EncSymKey, new byte[] { 1, 2, 3, 4 });
-            response.Add(TlvType.ChannelId, 10u);
+            //var request = new Packet(data[0]);
+            //var response = request.CreateResponse();
+            //response.Add(TlvType.EncSymKey, new byte[] { 1, 2, 3, 4 });
+            //response.Add(TlvType.ChannelId, 10u);
 
-            var group = response.AddGroup(TlvType.TransGroup);
-            group.Add(TlvType.TransUrl, "https://foo.com/bar");
-            group.Add(TlvType.TransRetryWait, 40u);
-            group.Add(TlvType.TransRetryTotal, 360u);
+            //var group = response.AddGroup(TlvType.TransGroup);
+            //group.Add(TlvType.TransUrl, "https://foo.com/bar");
+            //group.Add(TlvType.TransRetryWait, 40u);
+            //group.Add(TlvType.TransRetryTotal, 360u);
 
-            var packetData = response.ToRaw(new byte[16] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
+            //var packetData = response.ToRaw(new byte[16] { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 });
 
-            var deserialisedPacket = new Packet(packetData);
+            //var deserialisedPacket = new Packet(packetData);
         }
     }
 }

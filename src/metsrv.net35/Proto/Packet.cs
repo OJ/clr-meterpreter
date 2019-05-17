@@ -19,6 +19,9 @@ namespace Met.Core.Proto
 
     public class Packet
     {
+        private const int HEADER_SIZE = 4 + 16 + 4 + 4 + 4;
+        private const int OFFSET_LENGTH = 24;
+
         private PacketType type;
         private RNGCryptoServiceProvider random = null;
 
@@ -55,9 +58,31 @@ namespace Met.Core.Proto
         public Packet(byte[] data)
             : this()
         {
+            ParseData(ref data);
+        }
+
+        public Packet(BinaryReader reader)
+            : this()
+        {
+            var header = reader.ReadBytes(HEADER_SIZE);
+            var clonedHeader = header.Clone() as byte[];
+            var packetBody = default(byte[]);
             var xorKey = new byte[4];
-            Array.Copy(data, xorKey, 4);
-            XorBytes(xorKey, ref data);
+            Array.Copy(clonedHeader, xorKey, xorKey.Length);
+            XorBytes(xorKey, ref clonedHeader);
+
+            using (var headerStream = new MemoryStream(clonedHeader))
+            using (var headerReader = new BinaryReader(headerStream))
+            {
+                headerReader.BaseStream.Seek(OFFSET_LENGTH, SeekOrigin.Begin);
+                var bytesToRead = headerReader.ReadDword() - 8;
+                packetBody = reader.ReadBytes((int)bytesToRead);
+            }
+
+            var data = new byte[header.Length + packetBody.Length];
+            Array.Copy(header, data, header.Length);
+            Array.Copy(packetBody, 0, data, header.Length, packetBody.Length);
+
             ParseData(ref data);
         }
 
@@ -182,6 +207,10 @@ namespace Met.Core.Proto
 
         private void ParseData(ref byte[] data)
         {
+            var xorKey = new byte[4];
+            Array.Copy(data, xorKey, 4);
+            XorBytes(xorKey, ref data);
+
             using (var stream = new MemoryStream(data))
             using (var reader = new BinaryReader(stream))
             {

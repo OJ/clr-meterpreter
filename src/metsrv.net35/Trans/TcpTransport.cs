@@ -10,6 +10,7 @@ namespace Met.Core.Trans
         private TcpClient tcpClient;
         private NetworkStream tcpStream;
         private BinaryReader tcpReader;
+        private Session session;
 
         public TransportConfig Config { get; private set; }
 
@@ -21,9 +22,10 @@ namespace Met.Core.Trans
             }
         }
 
-        public TcpTransport(TransportConfig config)
+        public TcpTransport(TransportConfig config, Session session)
         {
             this.Config = config;
+            this.session = session;
         }
 
         public void Configure(BinaryReader reader)
@@ -76,9 +78,15 @@ namespace Met.Core.Trans
             }
         }
 
-        public Packet GetPacket()
+        public Packet ReceivePacket()
         {
-            throw new NotImplementedException();
+            return new Packet(this.tcpReader);
+        }
+
+        public void SendPacket(Packet response)
+        {
+            var rawPacket = response.ToRaw(this.session.SessionGuid);
+            this.tcpStream.Write(rawPacket, 0, rawPacket.Length);
         }
     }
 }
