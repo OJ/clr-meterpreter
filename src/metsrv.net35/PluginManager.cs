@@ -1,5 +1,6 @@
 ﻿using Met.Core.Proto;
 using System;
+using System.Linq;
 using System.Collections.Generic;
 
 namespace Met.Core
@@ -29,6 +30,9 @@ namespace Met.Core
         {
             this.handlers = new Dictionary<string, FunctionDefinition>();
             this.extFunctions = new Dictionary<string, List<string>>();
+
+            // Internal function registrations
+            this.RegisterFunction(string.Empty, "core_enumextcmd", false, this.CoreEnumextcmd);
         }
 
         public void RegisterFunction(string extName, string method, bool blocking, Func<Packet, Packet> handler)
@@ -51,6 +55,25 @@ namespace Met.Core
             }
 
             return null;
+        }
+
+        private Packet CoreEnumextcmd(Packet request)
+        {
+            var response = request.CreateResponse();
+            var extName = request.Tlvs[TlvType.String].First().ValueAsString();
+
+            foreach (var cmd in GetCommandsForExtension(extName))
+            {
+                response.Add(TlvType.String, cmd);
+            }
+
+            response.Add(TlvType.Result, PacketResult.Success);
+            return response;
+        }
+
+        private IEnumerable<string> GetCommandsForExtension(string extName)
+        {
+            return this.handlers.Values.Where(fd => fd.ExtName == extName).Select(fd => fd.Method);
         }
     }
 }

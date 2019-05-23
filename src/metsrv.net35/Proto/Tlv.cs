@@ -8,6 +8,7 @@ using Met.Core.Extensions;
 
 namespace Met.Core.Proto
 {
+    [Flags]
     public enum MetaType : UInt32
     {
         None = 0u,
@@ -30,14 +31,14 @@ namespace Met.Core.Proto
         RequestId = MetaType.String | 2u,
         Exception = MetaType.Group | 3u,
         Result = MetaType.Uint | 4u,
-        String = MetaType.String | 11u,
+        String = MetaType.String | 10u,
         Uint = MetaType.Uint | 11u,
         Bool = MetaType.Bool | 12u,
-        Length = MetaType.Uint | 26u,
+        Length = MetaType.Uint | 25u,
         Data = MetaType.Raw | 26u,
         Flags = MetaType.Uint | 27u,
         // Channel TLVs
-        ChannelId = MetaType.Uint | 51u,
+        ChannelId = MetaType.Uint | 50u,
         ChannelType = MetaType.String | 51u,
         ChannelData = MetaType.Raw | 52u,
         ChannelDataGroup = MetaType.Group | 53u,
@@ -122,6 +123,10 @@ namespace Met.Core.Proto
                     }
                 }
             }
+            else if (metaType.HasFlag(MetaType.Compressed))
+            {
+                int x = 0;
+            }
             else
             {
                 // Otherwise, handle each value on its merit
@@ -154,7 +159,6 @@ namespace Met.Core.Proto
                         }
                     case MetaType.None:
                     case MetaType.Complex:
-                    case MetaType.Compressed:
                         {
                             throw new NotImplementedException(string.Format("Sorry, don't support {0} yet", metaType));
                         }

@@ -9,6 +9,12 @@ using Met.Core.Extensions;
 
 namespace Met.Core.Proto
 {
+    public enum PacketResult : UInt32
+    {
+        Success = 0u,
+        CallNotImplemented = 120u,
+    }
+
     public enum PacketType : UInt32
     {
         Request = 0u,
@@ -35,6 +41,12 @@ namespace Met.Core.Proto
         public string Method
         {
             get { return this.Tlvs[TlvType.Method].First().ValueAsString(); }
+        }
+
+        public PacketResult Result
+        {
+            get { return (PacketResult)this.Tlvs[TlvType.Result].First().ValueAsDword(); }
+            set { this.Add(TlvType.Result, (UInt32)value); }
         }
 
         private RNGCryptoServiceProvider Random
@@ -141,6 +153,11 @@ namespace Met.Core.Proto
             response.Add(TlvType.Method, this.Method);
 
             return response;
+        }
+
+        public Tlv Add(TlvType type, PacketResult value)
+        {
+            return this.Add(new Tlv(type, (UInt32)value));
         }
 
         public Tlv Add(TlvType type, string value)

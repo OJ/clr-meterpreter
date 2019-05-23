@@ -6,6 +6,7 @@ using Met.Core.Extensions;
 using System.Linq;
 using System.Threading;
 using System.Net.Sockets;
+using Met.Core.Proto;
 
 namespace Met.Core
 {
@@ -14,6 +15,7 @@ namespace Met.Core
         private ITransport currentTransport;
         private int transportIndex;
         private PluginManager pluginManager;
+        private CommandHandler commandHandler;
 
         private Session Session { get; set; }
         private List<ITransport> Transports { get; set; }
@@ -22,6 +24,9 @@ namespace Met.Core
         {
             this.pluginManager = new PluginManager();
             this.Transports = new List<ITransport>();
+            this.commandHandler = new CommandHandler();
+
+            this.commandHandler.Register(this.pluginManager);
         }
 
         public Server(BinaryReader reader)
@@ -100,10 +105,15 @@ namespace Met.Core
                 if (request != null)
                 {
                     var response = this.pluginManager.InvokeHandler(request);
-                    if (response != null)
+                    if (response == null)
                     {
-                        this.currentTransport.SendPacket(response);
+                        response = request.CreateResponse();
+                        response.Result = PacketResult.CallNotImplemented;
                     }
+
+                    response.Add(TlvType.Uuid, this.Session.SessionUuid);
+
+                    this.currentTransport.SendPacket(response);
                 }
                 else
                 {
