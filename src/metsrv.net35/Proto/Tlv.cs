@@ -123,10 +123,11 @@ namespace Met.Core.Proto
                     }
                 }
             }
-            else if (metaType.HasFlag(MetaType.Compressed))
-            {
-                int x = 0;
-            }
+            // TODO: support compression
+            //else if (metaType.HasFlag(MetaType.Compressed))
+            //{
+            //    int x = 0;
+            //}
             else
             {
                 // Otherwise, handle each value on its merit

@@ -4,6 +4,14 @@ For the rationale behind this project, please see my [blog post](https://buffere
 
 This is going to take a long time, and at the moment there's not much to see!
 
+## Repositories to PR from (when finished)
+
+This is just for my own accounting when we're done. I need to remember the things I've modified along the way.
+
+* `metasploit-framework`
+* `metasploit-payloads`
+* `rex-arch`
+
 ## Keen to be involved?
 
 * Submit questions and comments in the suggestions box on my [Twitch](https://twitch.tv/ojreeves) page (and subscribe, if and when I finally make it to affiliate).

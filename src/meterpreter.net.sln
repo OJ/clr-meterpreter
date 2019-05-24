@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "metsrv.net35", "metsrv.net3
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestConsole.net35", "TestConsole.net35\TestConsole.net35.csproj", "{C3CC72BF-62A2-4034-AF66-E66DA73E425D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "stdapi.net35", "stdapi.net35\stdapi.net35.csproj", "{3296E4A3-94B5-4232-B423-44F4C7421CB3}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{C3CC72BF-62A2-4034-AF66-E66DA73E425D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C3CC72BF-62A2-4034-AF66-E66DA73E425D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C3CC72BF-62A2-4034-AF66-E66DA73E425D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3296E4A3-94B5-4232-B423-44F4C7421CB3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3296E4A3-94B5-4232-B423-44F4C7421CB3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3296E4A3-94B5-4232-B423-44F4C7421CB3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3296E4A3-94B5-4232-B423-44F4C7421CB3}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

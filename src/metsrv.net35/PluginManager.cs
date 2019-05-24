@@ -2,6 +2,7 @@
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using System.Reflection;
 
 namespace Met.Core
 {
@@ -33,6 +34,7 @@ namespace Met.Core
 
             // Internal function registrations
             this.RegisterFunction(string.Empty, "core_enumextcmd", false, this.CoreEnumextcmd);
+            this.RegisterFunction(string.Empty, "core_loadlib", false, this.CoreLoadLib);
         }
 
         public void RegisterFunction(string extName, string method, bool blocking, Func<Packet, Packet> handler)
@@ -55,6 +57,27 @@ namespace Met.Core
             }
 
             return null;
+        }
+
+        private Packet CoreLoadLib(Packet request)
+        {
+            var response = request.CreateResponse();
+            var data = request.Tlvs[TlvType.Data].First().ValueAsRaw();
+            var assembly = Assembly.Load(data);
+
+            var pluginType = assembly.GetTypes().Where(t => t.IsClass && typeof(IPlugin).IsAssignableFrom(t)).FirstOrDefault();
+            if (pluginType != null)
+            {
+                var pluginInstance = assembly.CreateInstance(pluginType.FullName) as IPlugin;
+                pluginInstance.Register(this);
+                response.Add(TlvType.Result, PacketResult.Success);
+            }
+            else
+            {
+                response.Add(TlvType.Result, PacketResult.InvalidData);
+            }
+
+            return response;
         }
 
         private Packet CoreEnumextcmd(Packet request)
