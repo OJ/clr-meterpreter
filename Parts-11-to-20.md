@@ -27,3 +27,8 @@ It was fun nevertheless. We got to the point where we had created a stdapi insta
 
 [MSF Commit](https://github.com/OJ/metasploit-framework/commit/8cd16bc43b26e8ce98b99c72c5c3f8cae269fe9c) - [Rex Arch Commit](https://github.com/OJ/rex-arch/commit/46519f5533be959b94b5b03f6dcc665139bb2619) - [Vimeo](https://vimeo.com/338247816) - [YouTube](https://youtu.be/RGWseXls72w)
 
+# Part 14 - 11 Jun 2019 @ 20:00 AEST
+
+In this stream we managed to get the plugin system working with assembly resolution events. We rejigged the dispatcher so that we can support blocking and non blocking events. We adjusted the callbacks so that they can tell the caller whether or not to exit, and we added initial support for `getuid`. Progress!
+
+[MSF Commit](https://github.com/OJ/metasploit-framework/commit/7f6540f7b56f582bc350fde2ab92bddec1b29e32) - [Vimeo](https://vimeo.com/341324902) - [YouTube](https://youtu.be/D4X5sGKpAXk)

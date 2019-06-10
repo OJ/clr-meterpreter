@@ -91,6 +91,9 @@ namespace Met.Core.Proto
         PivoteStageData = MetaType.Raw | 651u,
         PivoteStageDataLen = MetaType.Uint | 652u,
         PivotNamedPipeName = MetaType.String | 653u,
+        // STDAPI stuff
+        StdapiPlugin = 0u,
+        StdapiUserName = MetaType.String | ( StdapiPlugin + 1042u),
     }
 
     public class Tlv

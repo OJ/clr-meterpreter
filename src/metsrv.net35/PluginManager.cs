@@ -3,9 +3,17 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Threading;
 
 namespace Met.Core
 {
+    public enum InlineProcessingResult
+    {
+        Continue,
+        NextTransport,
+        Shutdown
+    }
+
     public class PluginManager
     {
         private class FunctionDefinition
@@ -13,9 +21,9 @@ namespace Met.Core
             public string ExtName { get; private set; }
             public string Method { get; private set; }
             public bool Blocking { get; private set; }
-            public Func<Packet, Packet> Handler { get; private set; }
+            public Func<Packet, Packet, InlineProcessingResult> Handler { get; private set; }
 
-            public FunctionDefinition(string extName, string method, bool blocking, Func<Packet, Packet> handler)
+            public FunctionDefinition(string extName, string method, bool blocking, Func<Packet, Packet, InlineProcessingResult> handler)
             {
                 this.ExtName = extName;
                 this.Method = method;
@@ -24,20 +32,29 @@ namespace Met.Core
             }
         }
 
-        private Dictionary<string, FunctionDefinition> handlers = null;
-        private Dictionary<string, List<string>> extFunctions = null;
+        private readonly Dictionary<string, FunctionDefinition> handlers = null;
+        private readonly Dictionary<string, List<string>> extFunctions = null;
+        private readonly Action<Packet> packetDispatcher = null;
 
-        public PluginManager()
+        public PluginManager(Action<Packet> packetDispatcher)
         {
             this.handlers = new Dictionary<string, FunctionDefinition>();
             this.extFunctions = new Dictionary<string, List<string>>();
+            this.packetDispatcher = packetDispatcher;
+
+            AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
             // Internal function registrations
             this.RegisterFunction(string.Empty, "core_enumextcmd", false, this.CoreEnumextcmd);
             this.RegisterFunction(string.Empty, "core_loadlib", false, this.CoreLoadLib);
         }
 
-        public void RegisterFunction(string extName, string method, bool blocking, Func<Packet, Packet> handler)
+        private Assembly AssemblyResolve(object sender, ResolveEventArgs args)
+        {
+            return Assembly.GetExecutingAssembly();
+        }
+
+        public void RegisterFunction(string extName, string method, bool blocking, Func<Packet, Packet, InlineProcessingResult> handler)
         {
             this.handlers[method] = new FunctionDefinition(extName, method, blocking, handler);
         }
@@ -47,21 +64,39 @@ namespace Met.Core
             this.handlers.Remove(name);
         }
 
-        public Packet InvokeHandler(Packet request)
+        public InlineProcessingResult InvokeHandler(Packet request, Packet response)
         {
+            var result = InlineProcessingResult.Continue;
             var fd = default(FunctionDefinition);
 
             if (this.handlers.TryGetValue(request.Method, out fd))
             {
-                return fd.Handler(request);
+                if (!fd.Blocking)
+                {
+                    var threadStart = new ThreadStart(() =>
+                    {
+                        fd.Handler(request, response);
+                        this.packetDispatcher(response);
+                    });
+
+                    var thread = new Thread(threadStart);
+                    thread.Start();
+                    return InlineProcessingResult.Continue;
+                }
+
+                result = fd.Handler(request, response);
+            }
+            else
+            {
+                response.Result = PacketResult.CallNotImplemented;
             }
 
-            return null;
+            this.packetDispatcher(response);
+            return result;
         }
 
-        private Packet CoreLoadLib(Packet request)
+        private InlineProcessingResult CoreLoadLib(Packet request, Packet response)
         {
-            var response = request.CreateResponse();
             var data = request.Tlvs[TlvType.Data].First().ValueAsRaw();
             var assembly = Assembly.Load(data);
 
@@ -70,19 +105,24 @@ namespace Met.Core
             {
                 var pluginInstance = assembly.CreateInstance(pluginType.FullName) as IPlugin;
                 pluginInstance.Register(this);
-                response.Add(TlvType.Result, PacketResult.Success);
+
+                foreach (var cmd in GetCommandsForExtension(pluginInstance.Name))
+                {
+                    response.Add(TlvType.String, cmd);
+                }
+
+                response.Result = PacketResult.Success;
             }
             else
             {
-                response.Add(TlvType.Result, PacketResult.InvalidData);
+                response.Result = PacketResult.InvalidData;
             }
 
-            return response;
+            return InlineProcessingResult.Continue;
         }
 
-        private Packet CoreEnumextcmd(Packet request)
+        private InlineProcessingResult CoreEnumextcmd(Packet request, Packet response)
         {
-            var response = request.CreateResponse();
             var extName = request.Tlvs[TlvType.String].First().ValueAsString();
 
             foreach (var cmd in GetCommandsForExtension(extName))
@@ -90,8 +130,9 @@ namespace Met.Core
                 response.Add(TlvType.String, cmd);
             }
 
-            response.Add(TlvType.Result, PacketResult.Success);
-            return response;
+            response.Result = PacketResult.Success;
+
+            return InlineProcessingResult.Continue;
         }
 
         private IEnumerable<string> GetCommandsForExtension(string extName)

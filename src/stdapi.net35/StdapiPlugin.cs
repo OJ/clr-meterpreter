@@ -3,7 +3,9 @@ using Met.Core.Proto;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Principal;
 using System.Text;
+using System.Threading;
 
 namespace Met.Stdapi
 {
@@ -17,6 +19,7 @@ namespace Met.Stdapi
 
         public void Register(PluginManager manager)
         {
+            manager.RegisterFunction(this.Name, "stdapi_sys_config_getuid", false, this.SysConfigGetUid);
             manager.RegisterFunction(this.Name, "core_channel_open", false, this.CoreChannelOpen);
         }
 
@@ -24,10 +27,18 @@ namespace Met.Stdapi
         {
         }
 
-        // TODO: move this to a channel manager of some kind
-        private Packet CoreChannelOpen(Packet request)
+        private InlineProcessingResult SysConfigGetUid(Packet request, Packet response)
         {
-            return request.CreateResponse();
+            // TODO: validate that this works correctly when we impersonate other users or use `getsystem`
+            response.Add(TlvType.StdapiUserName, WindowsIdentity.GetCurrent().Name);
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.Continue;
+        }
+
+        // TODO: move this to a channel manager of some kind
+        private InlineProcessingResult CoreChannelOpen(Packet request, Packet response)
+        {
+            return InlineProcessingResult.Continue;
         }
     }
 }

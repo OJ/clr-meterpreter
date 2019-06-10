@@ -22,7 +22,7 @@ namespace Met.Core
 
         private Server()
         {
-            this.pluginManager = new PluginManager();
+            this.pluginManager = new PluginManager(this.DispatchPacket);
             this.Transports = new List<ITransport>();
             this.commandHandler = new CommandHandler();
 
@@ -67,9 +67,12 @@ namespace Met.Core
 
         public void Run()
         {
+            var running = true;
             try
             {
-                while (true)
+                RegisterServerCommands();
+
+                while (running)
                 {
                     var transportExpiry = DateTime.UtcNow.AddSeconds(this.currentTransport.Config.RetryTotal);
 
@@ -88,36 +91,75 @@ namespace Met.Core
                         continue;
                     }
 
-                    PacketDispatchLoop();
+                    switch (PacketDispatchLoop())
+                    {
+                        case InlineProcessingResult.Shutdown:
+                            {
+                                running = false;
+                                break;
+                            }
+                        case InlineProcessingResult.NextTransport:
+                            {
+                                // TODO: change transports
+                                break;
+                            }
+                        case InlineProcessingResult.Continue:
+                        default:
+                            {
+                                // TODO: remove this case down the track
+                                break;
+                            }
+                    }
                 }
             }
             catch (TimeoutException)
             {
                 // the session has timed out, clean up and shut down
             }
+
+            foreach (var transport in this.Transports)
+            {
+                transport.Dispose();
+            }
+
+            this.Transports.Clear();
         }
 
-        private void PacketDispatchLoop()
+        private void DispatchPacket(Packet packet)
+        {
+            this.currentTransport.SendPacket(packet);
+        }
+
+        private void RegisterServerCommands()
+        {
+            this.pluginManager.RegisterFunction(string.Empty, "core_shutdown", true, CoreShutdown);
+        }
+
+        private InlineProcessingResult CoreShutdown(Packet request, Packet response)
+        {
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.Shutdown;
+        }
+
+        private InlineProcessingResult PacketDispatchLoop()
         {
             while (true)
             {
                 var request = this.currentTransport.ReceivePacket();
                 if (request != null)
                 {
-                    var response = this.pluginManager.InvokeHandler(request);
-                    if (response == null)
-                    {
-                        response = request.CreateResponse();
-                        response.Result = PacketResult.CallNotImplemented;
-                    }
-
+                    var response = request.CreateResponse();
                     response.Add(TlvType.Uuid, this.Session.SessionUuid);
+                    var result = this.pluginManager.InvokeHandler(request, response);
 
-                    this.currentTransport.SendPacket(response);
+                    if (result != InlineProcessingResult.Continue)
+                    {
+                        return result;
+                    }
                 }
                 else
                 {
-                    break;
+                    return InlineProcessingResult.NextTransport;
                 }
             }
         }

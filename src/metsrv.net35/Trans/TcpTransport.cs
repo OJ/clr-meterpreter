@@ -7,10 +7,11 @@ namespace Met.Core.Trans
 {
     public class TcpTransport : ITransport
     {
-        private TcpClient tcpClient;
-        private NetworkStream tcpStream;
-        private BinaryReader tcpReader;
-        private Session session;
+        private TcpClient tcpClient = null;
+        private NetworkStream tcpStream = null;
+        private BinaryReader tcpReader = null;
+        private Session session = null;
+        private object tcpSendLock = null;
 
         public TransportConfig Config { get; private set; }
 
@@ -24,6 +25,7 @@ namespace Met.Core.Trans
 
         public TcpTransport(TransportConfig config, Session session)
         {
+            this.tcpSendLock = new object();
             this.Config = config;
             this.session = session;
         }
@@ -86,7 +88,10 @@ namespace Met.Core.Trans
         public void SendPacket(Packet response)
         {
             var rawPacket = response.ToRaw(this.session.SessionGuid);
-            this.tcpStream.Write(rawPacket, 0, rawPacket.Length);
+            lock (this.tcpSendLock)
+            {
+                this.tcpStream.Write(rawPacket, 0, rawPacket.Length);
+            }
         }
     }
 }
