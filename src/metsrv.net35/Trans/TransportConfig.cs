@@ -26,7 +26,7 @@ namespace Met.Core.Trans
 
         public ITransport CreateTransport(Session session)
         {
-            switch (this.Uri.Scheme.ToLower())
+            switch (this.Uri.Scheme.ToLowerInvariant())
             {
                 case "tcp":
                     {

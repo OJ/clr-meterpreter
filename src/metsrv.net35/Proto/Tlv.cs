@@ -93,7 +93,14 @@ namespace Met.Core.Proto
         PivotNamedPipeName = MetaType.String | 653u,
         // STDAPI stuff
         StdapiPlugin = 0u,
+        StdapiComputerName = MetaType.String | ( StdapiPlugin + 1040u),
+        StdapiOperatingSystemName = MetaType.String | ( StdapiPlugin + 1041u),
         StdapiUserName = MetaType.String | ( StdapiPlugin + 1042u),
+        StdapiArchitecture = MetaType.String | ( StdapiPlugin + 1043u),
+        StdapiLangSystem = MetaType.String | ( StdapiPlugin + 1044u),
+        StdapiSid = MetaType.String | ( StdapiPlugin + 1045u),
+        StdapiDomain = MetaType.String | ( StdapiPlugin + 1046u),
+        StdapiLoggedOnUserCount = MetaType.Uint | ( StdapiPlugin + 1047u),
     }
 
     public class Tlv

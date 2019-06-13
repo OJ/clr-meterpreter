@@ -148,6 +148,9 @@ namespace Met.Core
                 var request = this.currentTransport.ReceivePacket();
                 if (request != null)
                 {
+#if DEBUG
+                    System.Diagnostics.Debug.WriteLine(string.Format("Request: {0}", request.Method));
+#endif
                     var response = request.CreateResponse();
                     response.Add(TlvType.Uuid, this.Session.SessionUuid);
                     var result = this.pluginManager.InvokeHandler(request, response);

@@ -32,14 +32,17 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.DirectoryServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="NetConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StdapiPlugin.cs" />
+    <Compile Include="SysConfig.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\metsrv.net35\metsrv.net35.csproj">
