@@ -38,3 +38,9 @@ In this stream we managed to get the plugin system working with assembly resolut
 More progress tonight, working through some of the stdapi function calls so that MSF sees our new CLR sessions as valid sessions. The  next few streams are going to be more of the same as we pad features out slowly.
 
 [Vimeo](https://vimeo.com/342007094) - [YouTube](https://youtu.be/iOq5KAKzRBw)
+
+# Part 16 - 17 Jun 2019 @ 20:00 AEST
+
+On this stream we went back to fill in the P/Invoke approach. We explored how it worked, and why we wanted to hide it away. The result was that we were able to get it working in a way that allowed for the functionality to be enabled at runtime rather than compile time. The goal of the next stream is to abstract this functionality away into something reusable, while also adding full support for loading the dynamic types into another app domain.
+
+[Vimeo](https://vimeo.com/342722147) - [YouTube](https://youtu.be/Mxv-_Y2CDpE)
