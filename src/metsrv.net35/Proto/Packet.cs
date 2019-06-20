@@ -27,6 +27,7 @@ namespace Met.Core.Proto
     public class Packet
     {
         private const int HEADER_SIZE = 4 + 16 + 4 + 4 + 4;
+        private const int ENC_LENGTH = 20;
         private const int OFFSET_LENGTH = 24;
 
         private PacketType type;
@@ -68,13 +69,13 @@ namespace Met.Core.Proto
             this.Tlvs = new Dictionary<TlvType, List<Tlv>>();
         }
 
-        public Packet(byte[] data)
+        public Packet(byte[] data, PacketEncryptor packetEncryptor)
             : this()
         {
-            ParseData(ref data);
+            ParseData(ref data, packetEncryptor);
         }
 
-        public Packet(BinaryReader reader)
+        public Packet(BinaryReader reader, PacketEncryptor packetEncryptor)
             : this()
         {
             var header = reader.ReadBytes(HEADER_SIZE);
@@ -87,19 +88,27 @@ namespace Met.Core.Proto
             using (var headerStream = new MemoryStream(clonedHeader))
             using (var headerReader = new BinaryReader(headerStream))
             {
-                headerReader.BaseStream.Seek(OFFSET_LENGTH, SeekOrigin.Begin);
+                // Move to the encryption flags
+                headerReader.BaseStream.Seek(ENC_LENGTH, SeekOrigin.Begin);
+                var encFlags = headerReader.ReadDword();
                 var bytesToRead = headerReader.ReadDword() - 8;
                 packetBody = reader.ReadBytes((int)bytesToRead);
+
+                if (encFlags == PacketEncryptor.ENC_AES256)
+                {
+                    // UM, why are we decrypting a packet body that hasn't been XOR'd yet?!
+                    packetBody = packetEncryptor.AesDecrypt(packetBody);
+                }
             }
 
             var data = new byte[header.Length + packetBody.Length];
             Array.Copy(header, data, header.Length);
             Array.Copy(packetBody, 0, data, header.Length, packetBody.Length);
 
-            ParseData(ref data);
+            ParseData(ref data, packetEncryptor);
         }
 
-        public byte[] ToRaw(byte[] sessionGuid)
+        public byte[] ToRaw(byte[] sessionGuid, PacketEncryptor packetEncryptor)
         {
             var packetData = default(byte[]);
             using (var packetStream = new MemoryStream())
@@ -114,7 +123,7 @@ namespace Met.Core.Proto
                     {
                         tlv.ToRaw(tlvWriter);
                     }
-                    tlvData = tlvStream.ToArray();
+                    tlvData = packetEncryptor.Encrypt(tlvStream.ToArray());
                 }
 
                 // Write a zero XOR key
@@ -123,8 +132,7 @@ namespace Met.Core.Proto
                 // Write a blank session GUID
                 writer.Write(sessionGuid);
 
-                // Write ENC_NONE as the encryption flags
-                writer.WriteDword(0u);
+                writer.WriteDword(packetEncryptor.Flags);
 
                 // Specify the TLV data length
                 writer.WriteDword((UInt32)tlvData.Length + 8u);
@@ -223,7 +231,7 @@ namespace Met.Core.Proto
         }
 #endif
 
-        private void ParseData(ref byte[] data)
+        private void ParseData(ref byte[] data, PacketEncryptor packetEncryptor)
         {
             var xorKey = new byte[4];
             Array.Copy(data, xorKey, 4);

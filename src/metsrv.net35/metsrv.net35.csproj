@@ -43,11 +43,13 @@
     <Compile Include="Extensions\BinaryWriterExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Extensions\RSACryptoServiceProviderExtensions.cs" />
     <Compile Include="FileSystemFeature.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Proto\Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Proto\PacketEncryptor.cs" />
     <Compile Include="Proto\Tlv.cs" />
     <Compile Include="Server.cs" />
     <Compile Include="Session.cs" />

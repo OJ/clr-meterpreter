@@ -80,17 +80,16 @@ namespace Met.Core.Trans
             }
         }
 
-        public Packet ReceivePacket()
+        public Packet ReceivePacket(PacketEncryptor packetEncryptor)
         {
-            return new Packet(this.tcpReader);
+            return new Packet(this.tcpReader, packetEncryptor);
         }
 
-        public void SendPacket(Packet response)
+        public void SendPacket(byte[] responsePacket)
         {
-            var rawPacket = response.ToRaw(this.session.SessionGuid);
             lock (this.tcpSendLock)
             {
-                this.tcpStream.Write(rawPacket, 0, rawPacket.Length);
+                this.tcpStream.Write(responsePacket, 0, responsePacket.Length);
             }
         }
     }

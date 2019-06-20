@@ -44,3 +44,18 @@ More progress tonight, working through some of the stdapi function calls so that
 On this stream we went back to fill in the P/Invoke approach. We explored how it worked, and why we wanted to hide it away. The result was that we were able to get it working in a way that allowed for the functionality to be enabled at runtime rather than compile time. The goal of the next stream is to abstract this functionality away into something reusable, while also adding full support for loading the dynamic types into another app domain.
 
 [Vimeo](https://vimeo.com/342722147) - [YouTube](https://youtu.be/Mxv-_Y2CDpE)
+
+# Part 17 - 20 Jun 2019 @ 20:00 AEST
+
+Collectively we decided to support TLV encryption. We quickly found that for some reason .NET doesn't natively support parsing PEM-formatted public keys, and so (ironically) we ended up having to steal an open-source implementation that used the native crypto APIs via P/Invoke (ugh). This code looked to work in a similar way to how the native Meterpreter PEM parsing worked. So we basically stole someone else's code. Yay! I didn't have to write it again, that's a huge win.
+
+From there we butted heads against AES encryption before finishing the stream late. In short, we didn't get it working, but we're very close.
+
+As soon as I finished streaming I realised what was wrong. Two things:
+
+1. I was using the wrong padding (it should have been ISO10126).
+1. I was decrypting the packet body _before_ XOR'ing it with the key, which was resulting in absolute garbage.
+
+A quick local test showed that as soon as fixed that up, things "just worked". I reverted those changes (but left some comments in) so that we can finish it off on stream next week.
+
+[Vimeo](https://vimeo.com/343435543) - [YouTube](https://youtu.be/c2bQ7xc3wlY)

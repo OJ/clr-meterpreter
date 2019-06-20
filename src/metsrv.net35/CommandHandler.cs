@@ -11,23 +11,24 @@ namespace Met.Core
 {
     public class CommandHandler
     {
-        //[DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        //[return: MarshalAs(UnmanagedType.Bool)]
-        //public extern static bool GetVolumeInformation(
-        //    string rootPathName,
-        //    StringBuilder volumeNameBuffer,
-        //    int volumeNameSize,
-        //    out uint volumeSerialNumber,
-        //    out uint maximumComponentLength,
-        //    out uint fileSystemFlags,
-        //    StringBuilder fileSystemNameBuffer,
-        //    int nFileSystemNameSize);
+        [DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        [return: MarshalAs(UnmanagedType.Bool)]
+        public extern static bool GetVolumeInformation(
+            string rootPathName,
+            StringBuilder volumeName,
+            int volumeNameSize,
+            out uint volumeSerialNumber,
+            out uint maximumComponentLength,
+            out uint fileSystemFlags,
+            StringBuilder fileSystemName,
+            int fileSystemNameSize);
 
         public void Register(PluginManager manager)
         {
             manager.RegisterFunction(string.Empty, "core_machine_id", false, this.CoreMachineId);
         }
 
+#if COMEBACKTOTHIS
         private static bool GetVolumeInformation(
             string rootPathName,
             StringBuilder volumeNameBuffer,
@@ -71,6 +72,7 @@ namespace Met.Core
             fileSystemFlags = (uint)args[5];
             return result;
         }
+#endif
 
         private InlineProcessingResult CoreMachineId(Packet request, Packet response)
         {

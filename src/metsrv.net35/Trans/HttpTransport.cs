@@ -51,12 +51,12 @@ namespace Met.Core.Trans
         {
         }
 
-        public Packet ReceivePacket()
+        public Packet ReceivePacket(PacketEncryptor packetEncryptor)
         {
             throw new NotImplementedException();
         }
 
-        public void SendPacket(Packet response)
+        public void SendPacket(byte[] responsePacket)
         {
             throw new NotImplementedException();
         }

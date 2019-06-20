@@ -12,10 +12,11 @@ namespace Met.Core
 {
     public class Server
     {
-        private ITransport currentTransport;
-        private int transportIndex;
-        private PluginManager pluginManager;
-        private CommandHandler commandHandler;
+        private ITransport currentTransport = null;
+        private int transportIndex = 0;
+        private PluginManager pluginManager = null;
+        private CommandHandler commandHandler = null;
+        private PacketEncryptor packetEncryptor = null;
 
         private Session Session { get; set; }
         private List<ITransport> Transports { get; set; }
@@ -25,6 +26,7 @@ namespace Met.Core
             this.pluginManager = new PluginManager(this.DispatchPacket);
             this.Transports = new List<ITransport>();
             this.commandHandler = new CommandHandler();
+            this.packetEncryptor = new PacketEncryptor();
 
             this.commandHandler.Register(this.pluginManager);
         }
@@ -127,12 +129,44 @@ namespace Met.Core
 
         private void DispatchPacket(Packet packet)
         {
-            this.currentTransport.SendPacket(packet);
+            var rawPacket = packet.ToRaw(this.Session.SessionGuid, this.packetEncryptor);
+
+            this.currentTransport.SendPacket(rawPacket);
+
+            if (this.packetEncryptor.HasAesKey && !this.packetEncryptor.Enabled)
+            {
+                this.packetEncryptor.Enabled = true;
+            }
         }
 
         private void RegisterServerCommands()
         {
             this.pluginManager.RegisterFunction(string.Empty, "core_shutdown", true, CoreShutdown);
+            this.pluginManager.RegisterFunction(string.Empty, "core_negotiate_tlv_encryption", false, CoreNegotiateTlvEncryption);
+        }
+
+        private InlineProcessingResult CoreNegotiateTlvEncryption(Packet request, Packet response)
+        {
+            var pubKey = request.Tlvs[TlvType.RsaPubKey].First().ValueAsString();
+            var key = this.packetEncryptor.GenerateNewAesKey();
+
+            try
+            {
+                var encryptedKey = this.packetEncryptor.RsaEncrypt(pubKey, key);
+                response.Add(TlvType.EncSymKey, encryptedKey);
+            }
+            catch
+            {
+                response.Add(TlvType.SymKey, key);
+            }
+
+            response.Add(TlvType.SymKeyType, PacketEncryptor.ENC_AES256);
+
+            this.packetEncryptor.AesKey = key;
+
+            response.Result = PacketResult.Success;
+
+            return InlineProcessingResult.Continue;
         }
 
         private InlineProcessingResult CoreShutdown(Packet request, Packet response)
@@ -145,7 +179,7 @@ namespace Met.Core
         {
             while (true)
             {
-                var request = this.currentTransport.ReceivePacket();
+                var request = this.currentTransport.ReceivePacket(this.packetEncryptor);
                 if (request != null)
                 {
 #if DEBUG

@@ -12,7 +12,7 @@ namespace Met.Core.Trans
         void Configure(BinaryReader reader);
         bool Connect();
 
-        Packet ReceivePacket();
-        void SendPacket(Packet response);
+        Packet ReceivePacket(PacketEncryptor packetEncryptor);
+        void SendPacket(byte[] responsePacket);
     }
 }
