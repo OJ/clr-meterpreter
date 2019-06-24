@@ -69,43 +69,44 @@ namespace Met.Core.Proto
             this.Tlvs = new Dictionary<TlvType, List<Tlv>>();
         }
 
-        public Packet(byte[] data, PacketEncryptor packetEncryptor)
-            : this()
-        {
-            ParseData(ref data, packetEncryptor);
-        }
+        //public Packet(byte[] data)
+        //    : this()
+        //{
+        //    ParseData(ref data);
+        //}
 
         public Packet(BinaryReader reader, PacketEncryptor packetEncryptor)
             : this()
         {
             var header = reader.ReadBytes(HEADER_SIZE);
-            var clonedHeader = header.Clone() as byte[];
             var packetBody = default(byte[]);
             var xorKey = new byte[4];
-            Array.Copy(clonedHeader, xorKey, xorKey.Length);
-            XorBytes(xorKey, ref clonedHeader);
+            Array.Copy(header, xorKey, xorKey.Length);
+            XorBytes(xorKey, ref header);
 
-            using (var headerStream = new MemoryStream(clonedHeader))
+            var encrypted = false;
+            var packetType = PacketType.Request;
+
+            using (var headerStream = new MemoryStream(header))
             using (var headerReader = new BinaryReader(headerStream))
             {
                 // Move to the encryption flags
                 headerReader.BaseStream.Seek(ENC_LENGTH, SeekOrigin.Begin);
                 var encFlags = headerReader.ReadDword();
                 var bytesToRead = headerReader.ReadDword() - 8;
+                packetType = headerReader.ReadPacketType();
                 packetBody = reader.ReadBytes((int)bytesToRead);
 
-                if (encFlags == PacketEncryptor.ENC_AES256)
-                {
-                    // UM, why are we decrypting a packet body that hasn't been XOR'd yet?!
-                    packetBody = packetEncryptor.AesDecrypt(packetBody);
-                }
+                encrypted = encFlags == PacketEncryptor.ENC_AES256;
             }
 
-            var data = new byte[header.Length + packetBody.Length];
-            Array.Copy(header, data, header.Length);
-            Array.Copy(packetBody, 0, data, header.Length, packetBody.Length);
+            XorBytes(xorKey, ref packetBody);
+            if (encrypted)
+            {
+                packetBody = packetEncryptor.AesDecrypt(packetBody);
+            }
 
-            ParseData(ref data, packetEncryptor);
+            ParseData(packetType, ref packetBody);
         }
 
         public byte[] ToRaw(byte[] sessionGuid, PacketEncryptor packetEncryptor)
@@ -126,20 +127,13 @@ namespace Met.Core.Proto
                     tlvData = packetEncryptor.Encrypt(tlvStream.ToArray());
                 }
 
-                // Write a zero XOR key
+                // Write a zero XOR key, which gets filled in later.
                 writer.WriteDword(0u);
 
-                // Write a blank session GUID
                 writer.Write(sessionGuid);
-
                 writer.WriteDword(packetEncryptor.Flags);
-
-                // Specify the TLV data length
                 writer.WriteDword((UInt32)tlvData.Length + 8u);
-
-                // Specify the type
                 writer.WritePacketType(this.type);
-
                 writer.Write(tlvData);
 
                 packetData = packetStream.ToArray();
@@ -231,20 +225,13 @@ namespace Met.Core.Proto
         }
 #endif
 
-        private void ParseData(ref byte[] data, PacketEncryptor packetEncryptor)
+        private void ParseData(PacketType type, ref byte[] data)
         {
-            var xorKey = new byte[4];
-            Array.Copy(data, xorKey, 4);
-            XorBytes(xorKey, ref data);
+            this.type = type;
 
             using (var stream = new MemoryStream(data))
             using (var reader = new BinaryReader(stream))
             {
-                // Skip the first 28 bytes which contains:
-                // XOR Key (4) session GUID (16) encryption flags (4) length (4)
-                reader.BaseStream.Seek(28, SeekOrigin.Begin);
-                this.type = reader.ReadPacketType();
-
                 while (!reader.IsFinished())
                 {
                     Add(new Tlv(reader));

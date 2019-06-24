@@ -60,7 +60,7 @@ namespace Met.Core.Proto
         public byte[] AesEncrypt(byte[] data)
         {
             var iv = this.GenerateRandomBytes(16);
-            using (var aes = new AesManaged { Padding = PaddingMode.ISO10126 })
+            using (var aes = new AesManaged())
             using (var encryptor = aes.CreateEncryptor(this.AesKey, iv))
             using (var memStream = new MemoryStream())
             {
@@ -76,19 +76,23 @@ namespace Met.Core.Proto
         public byte[] AesDecrypt(byte[] data)
         {
             var iv = new byte[16];
-            var decrypted = new byte[data.Length - iv.Length];
-            using (var memStream = new MemoryStream(data))
+            var result = new byte[data.Length - iv.Length];
+            using (var dataReader = new MemoryStream(data))
             {
-                memStream.Read(iv, 0, iv.Length);
-                // Got the padding mode fixed as well.
-                using (var aes = new AesManaged { Padding = PaddingMode.ISO10126 })
+                dataReader.Read(iv, 0, iv.Length);
+                using (var aes = new AesManaged())
                 using (var decryptor = aes.CreateDecryptor(this.AesKey, iv))
-                using (var cryptoStream = new CryptoStream(memStream, decryptor, CryptoStreamMode.Read))
+                using (var cryptoStream = new CryptoStream(dataReader, decryptor, CryptoStreamMode.Read))
                 {
-                    cryptoStream.Read(decrypted, 0, decrypted.Length);
+                    var bytesDecrypted = cryptoStream.Read(result, 0, result.Length);
+
+                    using (var resultStream = new MemoryStream())
+                    {
+                        resultStream.Write(result, 0, bytesDecrypted);
+                        return resultStream.ToArray();
+                    }
                 }
             }
-            return decrypted;
         }
 
         public byte[] Encrypt(byte[] data)

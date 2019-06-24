@@ -59,3 +59,13 @@ As soon as I finished streaming I realised what was wrong. Two things:
 A quick local test showed that as soon as fixed that up, things "just worked". I reverted those changes (but left some comments in) so that we can finish it off on stream next week.
 
 [Vimeo](https://vimeo.com/343435543) - [YouTube](https://youtu.be/c2bQ7xc3wlY)
+
+# Part 18 - 24 Jun 2019 @ 20:30 AEST
+
+We managed to fix up the TLV encryption code, and thankfully saw a functional Meterpreter session using TLV encryption. Metasploit even sees it as valid. We went back to the default padding algorithm though, as I was wrong about that at the end of the previous stream.
+
+Once getting that working we moved on to sorting out the version detection code, only to get bitten by our use of `RtlGetVersion`. Just like last time, I figured out exactly what was going wrong within seconds of killing the stream. Note: make sure you understand the difference between `out` (ie. "I'll give you a thing") and `ref` (ie. "You give me a thing and I'll fill it") parameters. We used the former and should have used the latter.
+
+We'll get that fixed at the start of the next stream.
+
+[Vimeo](https://vimeo.com/344077231) - [YouTube](https://youtu.be/rXPAOO7SHok)
