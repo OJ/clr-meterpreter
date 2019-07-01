@@ -108,7 +108,7 @@ namespace Met.Core
 
                 foreach (var cmd in GetCommandsForExtension(pluginInstance.Name))
                 {
-                    response.Add(TlvType.String, cmd);
+                    response.Add(TlvType.Method, cmd);
                 }
 
                 response.Result = PacketResult.Success;

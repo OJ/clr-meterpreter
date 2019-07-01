@@ -69,3 +69,11 @@ Once getting that working we moved on to sorting out the version detection code,
 We'll get that fixed at the start of the next stream.
 
 [Vimeo](https://vimeo.com/344077231) - [YouTube](https://youtu.be/rXPAOO7SHok)
+
+# Part 19 - 1 July 2019 @ 20:00 AEST
+
+As promised we fixed up the issue with the use of `ref` vs `out` and that got us going with the version information. From there, I wanted to move onto finishing off the network interface enumeration (avoiding the use of P/Invoke as we went). I intended to use a native Meterpreter as a baseline and so fired up a standard session to see what the output was. Unfortunately for me, that uncovered an issue in the implementations of `core_enumextcmd` and `core_loadlib` (I assumed that the return type of the commands was the same, and it was not!). We dived into the MSF side for a while to fix that up before moving back onto the network interface enumeration.
+
+We nearly finished it, but didn't quite get there. I have a good feeling we'll nail that on the next stream and get going with more stdapi functionality after.
+
+[MSF Commit](https://github.com/OJ/metasploit-framework/commit/3d32f5e14a8c7dfd245bc5d55c5a66cf16eda375) - [Vimeo](https://vimeo.com/345456148) - [YouTube](https://youtu.be/_IOoPGH_E20)

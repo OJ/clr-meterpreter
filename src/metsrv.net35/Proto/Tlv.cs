@@ -101,6 +101,24 @@ namespace Met.Core.Proto
         StdapiSid = MetaType.String | ( StdapiPlugin + 1045u),
         StdapiDomain = MetaType.String | ( StdapiPlugin + 1046u),
         StdapiLoggedOnUserCount = MetaType.Uint | ( StdapiPlugin + 1047u),
+        StdapiInterfaceMtu = MetaType.Uint | ( StdapiPlugin + 1402u),
+        StdapiInterfaceFlags = MetaType.String | ( StdapiPlugin + 1403u),
+        StdapiInterfaceIndex = MetaType.Uint | ( StdapiPlugin + 1404u),
+        StdapiSubnet = MetaType.Raw | ( StdapiPlugin + 1420u),
+        StdapiNetmask = MetaType.Raw | ( StdapiPlugin + 1421u),
+        StdapiGateway = MetaType.Raw | ( StdapiPlugin + 1422u),
+        StdapiNetworkRoute = MetaType.Group | ( StdapiPlugin + 1423u),
+        StdapiIpPrefix = MetaType.Uint | ( StdapiPlugin + 1424u),
+        StdapiArpEntry = MetaType.Group | ( StdapiPlugin + 1425u),
+        StdapiIp = MetaType.Raw | ( StdapiPlugin + 1430u),
+        StdapiMacAddr = MetaType.Raw | ( StdapiPlugin + 1431u),
+        StdapiMacName = MetaType.String | ( StdapiPlugin + 1432u),
+        StdapiNetworkInterface = MetaType.Group | ( StdapiPlugin + 1433u),
+        StdapiIp6Scope = MetaType.Raw | ( StdapiPlugin + 1434u),
+        StdapiSubnetString = MetaType.String | ( StdapiPlugin + 1440u),
+        StdapiNetmaskString = MetaType.String | ( StdapiPlugin + 1441u),
+        StdapiGatewayString = MetaType.String | ( StdapiPlugin + 1442u),
+        StdapiRouteMetric = MetaType.Uint | ( StdapiPlugin + 1443u),
     }
 
     public class Tlv
@@ -265,12 +283,22 @@ namespace Met.Core.Proto
             ValidateMetaType(MetaType.String);
         }
 
+        public Tlv(TlvType type, Int32 value)
+            : this(type, (UInt32)value)
+        {
+        }
+
         public Tlv(TlvType type, UInt32 value)
             : this()
         {
             this.Type = type;
             this.value = value;
             ValidateMetaType(MetaType.Uint);
+        }
+
+        public Tlv(TlvType type, Int64 value)
+            : this(type, (UInt64)value)
+        {
         }
 
         public Tlv(TlvType type, UInt64 value)
@@ -316,6 +344,18 @@ namespace Met.Core.Proto
         }
 
         public Tlv Add(TlvType type, byte[] value)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, Int32 value)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, Int64 value)
         {
             ValidateMetaType(MetaType.Group);
             return this.Add(new Tlv(type, value));

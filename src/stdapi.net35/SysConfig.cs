@@ -84,19 +84,11 @@ namespace Met.Stdapi
             }
         }
 
-        private bool IsWorkstation()
-        {
-            var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
-            var value = key.GetValue("InstallationType");
-            return value.ToString().ToLowerInvariant() == "client";
-        }
-
-        // WHY DID I USE OUT INSTEAD OF REF?!
         [DllImport("ntdll.dll")]
-        internal static extern int RtlGetVersion(out RTL_OSVERSIONINFOEX lpVersionInformation);
+        internal static extern int RtlGetVersion(ref RtlOSVersionInfoEx lpVersionInformation);
 
         [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Unicode)]
-        internal struct RTL_OSVERSIONINFOEX
+        internal struct RtlOSVersionInfoEx
         {
             internal uint dwOSVersionInfoSize;
             internal uint dwMajorVersion;
@@ -116,14 +108,13 @@ namespace Met.Stdapi
         {
             var name = "unknown";
 
-#if USERTLGETVERSION
-            var v = new RTL_OSVERSIONINFOEX
+            var v = new RtlOSVersionInfoEx
             {
-                dwOSVersionInfoSize = (uint)Marshal.SizeOf(typeof(RTL_OSVERSIONINFOEX))
+                dwOSVersionInfoSize = (uint)Marshal.SizeOf(typeof(RtlOSVersionInfoEx))
             };
 
-            RtlGetVersion(out v);
-            var isWorkstation = IsWorkstation();
+            RtlGetVersion(ref v);
+            var isWorkstation = v.wProductType == VER_NT_WORKSTATION;
 
             if (v.dwMajorVersion == 3)
             {
@@ -200,89 +191,6 @@ namespace Met.Stdapi
             {
                 os = string.Format("{0} (Build {1}, {2})", name, v.dwBuildNumber, v.szCSDVersion);
             }
-#else
-            var isWorkstation = IsWorkstation();
-
-            var v = Environment.OSVersion;
-
-            if (v.Version.Major == 3)
-            {
-                name = "Windows NT 3.51";
-            }
-            else if (v.Version.Major == 4)
-            {
-                if (v.Platform == PlatformID.Win32Windows)
-                {
-                    if (v.Version.Minor == 0)
-                    {
-                        name = "Windows 95";
-                    }
-                    else if (v.Version.Minor == 10)
-                    {
-
-                        name = "Windows 98";
-                    }
-                    else if (v.Version.Minor == 90)
-                    {
-
-                        name = "Windows ME";
-                    }
-                }
-                else if (v.Platform == PlatformID.Win32NT)
-                {
-                    name = "Windows NT 4.0";
-                }
-            }
-            else if (v.Version.Major == 5)
-            {
-                if (v.Version.Minor == 0)
-                {
-                    name = "Windows 2000";
-                }
-                else if (v.Version.Minor == 1)
-                {
-                    name = "Windows XP";
-                }
-                else if (v.Version.Minor == 2)
-                {
-                    name = "Windows .NET Server";
-                }
-            }
-            else if (v.Version.Major == 6)
-            {
-                if (v.Version.Minor == 0)
-                {
-                    name = isWorkstation ? "Windows Vista" : "Windows 2008";
-                }
-                else if (v.Version.Minor == 1)
-                {
-                    name = isWorkstation ? "Windows 7" : "Windows 2008 R2";
-                }
-                else if (v.Version.Minor == 2)
-                {
-                    name = isWorkstation ? "Windows 8" : "Windows 2012";
-                }
-                else if (v.Version.Minor == 3)
-                {
-                    name = isWorkstation ? "Windows 8.1" : "Windows 2012 R2";
-                }
-            }
-            else if (v.Version.Major == 6)
-            {
-                // TODO: make the assembly manifest indicate that this is windows 8.1+ compat
-                name = isWorkstation ? "Windows 10" : "Windows 2016";
-            }
-
-            var os = default(string);
-            if (string.IsNullOrEmpty(v.ServicePack))
-            {
-                os = string.Format("{0} (Build {1})", name, v.Version.Build);
-            }
-            else
-            {
-                os = string.Format("{0} (Build {1}, {2})", name, v.Version.Build, v.ServicePack);
-            }
-#endif
 
 #if DEBUG
             System.Diagnostics.Debug.WriteLine(string.Format("OS String: {0}", os));
