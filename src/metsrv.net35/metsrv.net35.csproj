@@ -43,7 +43,9 @@
     <Compile Include="Extensions\BinaryWriterExtensions.cs" />
     <Compile Include="Extensions\EnumExtensions.cs" />
     <Compile Include="Extensions\IEnumerableExtensions.cs" />
+    <Compile Include="Extensions\ObjectExtensions.cs" />
     <Compile Include="Extensions\RSACryptoServiceProviderExtensions.cs" />
+    <Compile Include="Extensions\UnicastIPAddressInformationExtensions.cs" />
     <Compile Include="FileSystemFeature.cs" />
     <Compile Include="IPlugin.cs" />
     <Compile Include="PluginManager.cs" />

@@ -7,7 +7,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Reflection;
 
-namespace TestConsole.net35
+namespace TestConsole
 {
     class Program
     {

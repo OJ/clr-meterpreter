@@ -1,4 +1,5 @@
 ﻿using Met.Core;
+using Met.Core.Extensions;
 using Met.Core.Proto;
 using System.Linq;
 using System.Net.NetworkInformation;
@@ -31,7 +32,7 @@ namespace Met.Stdapi
                     tlv.Add(TlvType.StdapiInterfaceMtu, ip4Props.Mtu);
                 }
 
-                foreach (var addr in ip.UnicastAddresses)
+                foreach (var addr in ip.UnicastAddresses.OrderBy(a => (uint)a.Address.AddressFamily))
                 {
                     if (addr.Address.AddressFamily != AddressFamily.InterNetwork &&
                         addr.Address.AddressFamily != AddressFamily.InterNetworkV6)
@@ -39,11 +40,13 @@ namespace Met.Stdapi
                         continue;
                     }
 
+                    tlv.Add(TlvType.StdapiIpPrefix, addr.GetPrefixLength());
                     tlv.Add(TlvType.StdapiIp, addr.Address.GetAddressBytes());
 
                     if (addr.Address.AddressFamily == AddressFamily.InterNetworkV6)
                     {
                         var sid = (uint)addr.Address.ScopeId;
+
                         var b = new byte[]
                         {
                             (byte)(sid & 0xFF),
@@ -53,13 +56,13 @@ namespace Met.Stdapi
                         };
                         tlv.Add(TlvType.StdapiIp6Scope, b);
                     }
-                    else
-                    {
-                        if (addr.IPv4Mask != null)
-                        {
-                            tlv.Add(TlvType.StdapiNetmask, addr.IPv4Mask.GetAddressBytes());
-                        }
-                    }
+                    //else
+                    //{
+                    //    if (addr.IPv4Mask != null)
+                    //    {
+                    //        tlv.Add(TlvType.StdapiNetmask, addr.IPv4Mask.GetAddressBytes());
+                    //    }
+                    //}
                 }
             }
 

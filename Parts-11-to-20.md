@@ -77,3 +77,13 @@ As promised we fixed up the issue with the use of `ref` vs `out` and that got us
 We nearly finished it, but didn't quite get there. I have a good feeling we'll nail that on the next stream and get going with more stdapi functionality after.
 
 [MSF Commit](https://github.com/OJ/metasploit-framework/commit/3d32f5e14a8c7dfd245bc5d55c5a66cf16eda375) - [Vimeo](https://vimeo.com/345456148) - [YouTube](https://youtu.be/_IOoPGH_E20)
+
+# Part 20 - 8 July 2019 @ 20:00 AEST
+
+I deem this stream a successful failure. We clearly noticed a few nuances in the mess that is the MSF parsing of network interfaces, and we're going to have to put a proper fix in place at some point down the track. We did, however, get a few things done including some hackery around reflection so that we could reach inner workings such as prefix length on interfaces, because for some reason they're not nicely exposed until .NET 4.8.
+
+One cool thing we did get working was the .NET 4.0 version of the binaries, though in the process we butted up against the TODO item of "make this binary suffix thing work" in MSF. We'll get to that on the next stream I think.
+
+Good fun, we learned stuff!
+
+[Vimeo](https://vimeo.com/346844232) - [YouTube](https://youtu.be/yThzBM63zPE)

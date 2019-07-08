@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{67C09D37-AC18-4F15-8DD6-B5DA721C0DF6}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Met.Core</RootNamespace>
+    <AssemblyName>metsrv.net40</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\bin\Debug\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;NET40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\bin\Release\</OutputPath>
+    <DefineConstants>TRACE;NET40</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\metsrv.net35\CommandHandler.cs">
+      <Link>CommandHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\BinaryReaderExtensions.cs">
+      <Link>Extensions\BinaryReaderExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\BinaryWriterExtensions.cs">
+      <Link>Extensions\BinaryWriterExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\EnumExtensions.cs">
+      <Link>Extensions\EnumExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\IEnumerableExtensions.cs">
+      <Link>Extensions\IEnumerableExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\ObjectExtensions.cs">
+      <Link>Extensions\ObjectExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\RSACryptoServiceProviderExtensions.cs">
+      <Link>Extensions\RSACryptoServiceProviderExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\UnicastIPAddressInformationExtensions.cs">
+      <Link>Extensions\UnicastIPAddressInformationExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\FileSystemFeature.cs">
+      <Link>FileSystemFeature.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\IPlugin.cs">
+      <Link>IPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\PluginManager.cs">
+      <Link>PluginManager.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Proto\Packet.cs">
+      <Link>Proto\Packet.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Proto\PacketEncryptor.cs">
+      <Link>Proto\PacketEncryptor.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Proto\Tlv.cs">
+      <Link>Proto\Tlv.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Server.cs">
+      <Link>Server.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Session.cs">
+      <Link>Session.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Trans\HttpTransport.cs">
+      <Link>Trans\HttpTransport.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Trans\ITransport.cs">
+      <Link>Trans\ITransport.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Trans\TcpTransport.cs">
+      <Link>Trans\TcpTransport.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Trans\TransportConfig.cs">
+      <Link>Trans\TransportConfig.cs</Link>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <PostBuildEvent>copy /y $(TargetPath) Z:\scratch\</PostBuildEvent>
+  </PropertyGroup>
+</Project>
