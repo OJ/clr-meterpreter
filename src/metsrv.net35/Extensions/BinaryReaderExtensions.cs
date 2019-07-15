@@ -1,11 +1,10 @@
-﻿using System;
+﻿using Met.Core.Proto;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net;
 using System.Text;
-
-using Met.Core.Proto;
-using System.Collections.Generic;
 
 namespace Met.Core.Extensions
 {

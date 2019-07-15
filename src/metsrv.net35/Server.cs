@@ -1,12 +1,12 @@
-﻿using Met.Core.Trans;
+﻿using Met.Core.Extensions;
+using Met.Core.Proto;
+using Met.Core.Trans;
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System;
-using Met.Core.Extensions;
 using System.Linq;
-using System.Threading;
 using System.Net.Sockets;
-using Met.Core.Proto;
+using System.Threading;
 
 namespace Met.Core
 {
@@ -141,8 +141,43 @@ namespace Met.Core
 
         private void RegisterServerCommands()
         {
-            this.pluginManager.RegisterFunction(string.Empty, "core_shutdown", true, CoreShutdown);
-            this.pluginManager.RegisterFunction(string.Empty, "core_negotiate_tlv_encryption", false, CoreNegotiateTlvEncryption);
+            this.pluginManager.RegisterFunction(string.Empty, "core_shutdown", true, this.CoreShutdown);
+            this.pluginManager.RegisterFunction(string.Empty, "core_negotiate_tlv_encryption", false, this.CoreNegotiateTlvEncryption);
+            this.pluginManager.RegisterFunction(string.Empty, "core_transport_set_timeouts", false, this.TransportSetTimeouts);
+        }
+
+        private InlineProcessingResult TransportSetTimeouts(Packet request, Packet response)
+        {
+            var tlvs = default(List<Tlv>);
+
+            if (request.Tlvs.TryGetValue(TlvType.TransSessExp, out tlvs) && tlvs.Count > 0)
+            {
+                this.Session.Expiry = DateTime.UtcNow.AddSeconds(tlvs[0].ValueAsDword());
+            }
+
+            if (request.Tlvs.TryGetValue(TlvType.TransCommTimeout, out tlvs) && tlvs.Count > 0)
+            {
+                this.currentTransport.Config.CommsTimeout = tlvs[0].ValueAsDword();
+            }
+
+            if (request.Tlvs.TryGetValue(TlvType.TransRetryTotal, out tlvs) && tlvs.Count > 0)
+            {
+                this.currentTransport.Config.RetryTotal = tlvs[0].ValueAsDword();
+            }
+
+            if (request.Tlvs.TryGetValue(TlvType.TransRetryWait, out tlvs) && tlvs.Count > 0)
+            {
+                this.currentTransport.Config.RetryWait = tlvs[0].ValueAsDword();
+            }
+
+            response.Add(TlvType.TransSessExp, (uint)(this.Session.Expiry - DateTime.UtcNow).TotalSeconds);
+            response.Add(TlvType.TransCommTimeout, this.currentTransport.Config.CommsTimeout);
+            response.Add(TlvType.TransRetryTotal, this.currentTransport.Config.RetryTotal);
+            response.Add(TlvType.TransRetryWait, this.currentTransport.Config.RetryWait);
+
+            response.Result = PacketResult.Success;
+
+            return InlineProcessingResult.Continue;
         }
 
         private InlineProcessingResult CoreNegotiateTlvEncryption(Packet request, Packet response)
@@ -179,6 +214,7 @@ namespace Met.Core
         {
             while (true)
             {
+                CheckSessionExpiry();
                 var request = this.currentTransport.ReceivePacket(this.packetEncryptor);
                 if (request != null)
                 {

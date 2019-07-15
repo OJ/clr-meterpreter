@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FileSystem.cs" />
     <Compile Include="NetConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="StdapiPlugin.cs" />

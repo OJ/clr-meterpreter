@@ -1,12 +1,11 @@
-﻿#define USERTLGETVERSION
-
-using Met.Core;
+﻿using Met.Core;
 using Met.Core.Proto;
-using System.Security.Principal;
 using System;
-using Microsoft.Win32;
-using System.Threading;
+using System.Collections.Generic;
+using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Principal;
+using System.Threading;
 
 namespace Met.Stdapi
 {
@@ -18,6 +17,43 @@ namespace Met.Stdapi
         {
             manager.RegisterFunction(extName, "stdapi_sys_config_getuid", false, this.GetUid);
             manager.RegisterFunction(extName, "stdapi_sys_config_sysinfo", false, this.GetSysinfo);
+            manager.RegisterFunction(extName, "stdapi_sys_config_getenv", false, this.GetEnv);
+            manager.RegisterFunction(extName, "stdapi_sys_config_localtime", false, this.GetLocalTime);
+        }
+
+        private InlineProcessingResult GetLocalTime(Packet request, Packet response)
+        {
+            var zone = TimeZone.CurrentTimeZone;
+            var now = DateTime.Now;
+            var offset = zone.GetUtcOffset(now);
+
+            var hours = Math.Abs(offset.TotalHours);
+            var utcOffset = Math.Floor(hours) * 100 + (hours - Math.Floor(hours)) * 60;
+            var result = string.Format("{0:yyyy-MM-dd HH:mm:ss.fff} {1} (UTC{2}{3})", now,
+                now.IsDaylightSavingTime() ? zone.DaylightName : zone.StandardName,
+                offset.TotalHours > 0.0 ? "+" : "-", utcOffset);
+
+            response.Add(TlvType.StdapiLocalDateTime, result);
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.Continue;
+        }
+
+        private InlineProcessingResult GetEnv(Packet request, Packet response)
+        {
+            var tlvs = default(List<Tlv>);
+            if (request.Tlvs.TryGetValue(TlvType.StdapiEnvVariable, out tlvs))
+            {
+                foreach (var envVar in tlvs.Select(t => t.ValueAsString()))
+                {
+                    var value = Environment.GetEnvironmentVariable(envVar);
+                    var envGroup = response.AddGroup(TlvType.StdapiEnvGroup);
+                    envGroup.Add(TlvType.StdapiEnvVariable, envVar);
+                    envGroup.Add(TlvType.StdapiEnvValue, value);
+                }
+            }
+
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.Continue;
         }
 
         private InlineProcessingResult GetSysinfo(Packet request, Packet response)

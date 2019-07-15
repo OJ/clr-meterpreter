@@ -1,7 +1,7 @@
-﻿using System;
+﻿using Met.Core.Proto;
+using System;
 using System.IO;
 using System.Net.Sockets;
-using Met.Core.Proto;
 
 namespace Met.Core.Trans
 {

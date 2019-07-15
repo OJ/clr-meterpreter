@@ -1,10 +1,9 @@
-﻿using System;
+﻿using Met.Core.Extensions;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-
-using Met.Core.Extensions;
 
 namespace Met.Core.Proto
 {
@@ -93,32 +92,36 @@ namespace Met.Core.Proto
         PivotNamedPipeName = MetaType.String | 653u,
         // STDAPI stuff
         StdapiPlugin = 0u,
-        StdapiComputerName = MetaType.String | ( StdapiPlugin + 1040u),
-        StdapiOperatingSystemName = MetaType.String | ( StdapiPlugin + 1041u),
-        StdapiUserName = MetaType.String | ( StdapiPlugin + 1042u),
-        StdapiArchitecture = MetaType.String | ( StdapiPlugin + 1043u),
-        StdapiLangSystem = MetaType.String | ( StdapiPlugin + 1044u),
-        StdapiSid = MetaType.String | ( StdapiPlugin + 1045u),
-        StdapiDomain = MetaType.String | ( StdapiPlugin + 1046u),
-        StdapiLoggedOnUserCount = MetaType.Uint | ( StdapiPlugin + 1047u),
-        StdapiInterfaceMtu = MetaType.Uint | ( StdapiPlugin + 1402u),
-        StdapiInterfaceFlags = MetaType.String | ( StdapiPlugin + 1403u),
-        StdapiInterfaceIndex = MetaType.Uint | ( StdapiPlugin + 1404u),
-        StdapiSubnet = MetaType.Raw | ( StdapiPlugin + 1420u),
-        StdapiNetmask = MetaType.Raw | ( StdapiPlugin + 1421u),
-        StdapiGateway = MetaType.Raw | ( StdapiPlugin + 1422u),
-        StdapiNetworkRoute = MetaType.Group | ( StdapiPlugin + 1423u),
-        StdapiIpPrefix = MetaType.Uint | ( StdapiPlugin + 1424u),
-        StdapiArpEntry = MetaType.Group | ( StdapiPlugin + 1425u),
-        StdapiIp = MetaType.Raw | ( StdapiPlugin + 1430u),
-        StdapiMacAddr = MetaType.Raw | ( StdapiPlugin + 1431u),
-        StdapiMacName = MetaType.String | ( StdapiPlugin + 1432u),
-        StdapiNetworkInterface = MetaType.Group | ( StdapiPlugin + 1433u),
-        StdapiIp6Scope = MetaType.Raw | ( StdapiPlugin + 1434u),
-        StdapiSubnetString = MetaType.String | ( StdapiPlugin + 1440u),
-        StdapiNetmaskString = MetaType.String | ( StdapiPlugin + 1441u),
-        StdapiGatewayString = MetaType.String | ( StdapiPlugin + 1442u),
-        StdapiRouteMetric = MetaType.Uint | ( StdapiPlugin + 1443u),
+        StdapiComputerName = MetaType.String | (StdapiPlugin + 1040u),
+        StdapiOperatingSystemName = MetaType.String | (StdapiPlugin + 1041u),
+        StdapiUserName = MetaType.String | (StdapiPlugin + 1042u),
+        StdapiArchitecture = MetaType.String | (StdapiPlugin + 1043u),
+        StdapiLangSystem = MetaType.String | (StdapiPlugin + 1044u),
+        StdapiSid = MetaType.String | (StdapiPlugin + 1045u),
+        StdapiDomain = MetaType.String | (StdapiPlugin + 1046u),
+        StdapiLoggedOnUserCount = MetaType.Uint | (StdapiPlugin + 1047u),
+        StdapiLocalDateTime = MetaType.String | (StdapiPlugin + 1048u),
+        StdapiEnvVariable = MetaType.String | (StdapiPlugin + 1100u),
+        StdapiEnvValue = MetaType.String | (StdapiPlugin + 1101u),
+        StdapiEnvGroup = MetaType.Group | (StdapiPlugin + 1102u),
+        StdapiInterfaceMtu = MetaType.Uint | (StdapiPlugin + 1402u),
+        StdapiInterfaceFlags = MetaType.String | (StdapiPlugin + 1403u),
+        StdapiInterfaceIndex = MetaType.Uint | (StdapiPlugin + 1404u),
+        StdapiSubnet = MetaType.Raw | (StdapiPlugin + 1420u),
+        StdapiNetmask = MetaType.Raw | (StdapiPlugin + 1421u),
+        StdapiGateway = MetaType.Raw | (StdapiPlugin + 1422u),
+        StdapiNetworkRoute = MetaType.Group | (StdapiPlugin + 1423u),
+        StdapiIpPrefix = MetaType.Uint | (StdapiPlugin + 1424u),
+        StdapiArpEntry = MetaType.Group | (StdapiPlugin + 1425u),
+        StdapiIp = MetaType.Raw | (StdapiPlugin + 1430u),
+        StdapiMacAddr = MetaType.Raw | (StdapiPlugin + 1431u),
+        StdapiMacName = MetaType.String | (StdapiPlugin + 1432u),
+        StdapiNetworkInterface = MetaType.Group | (StdapiPlugin + 1433u),
+        StdapiIp6Scope = MetaType.Raw | (StdapiPlugin + 1434u),
+        StdapiSubnetString = MetaType.String | (StdapiPlugin + 1440u),
+        StdapiNetmaskString = MetaType.String | (StdapiPlugin + 1441u),
+        StdapiGatewayString = MetaType.String | (StdapiPlugin + 1442u),
+        StdapiRouteMetric = MetaType.Uint | (StdapiPlugin + 1443u),
     }
 
     public class Tlv

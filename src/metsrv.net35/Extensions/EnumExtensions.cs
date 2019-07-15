@@ -1,5 +1,4 @@
 ﻿using Met.Core.Proto;
-using System;
 
 namespace Met.Core.Extensions
 {

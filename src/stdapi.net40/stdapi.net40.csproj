@@ -40,6 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\stdapi.net35\FileSystem.cs">
+      <Link>FileSystem.cs</Link>
+    </Compile>
     <Compile Include="..\stdapi.net35\NetConfig.cs">
       <Link>NetConfig.cs</Link>
     </Compile>

@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Met.Core.Proto;
+using System;
 using System.IO;
 using System.Net;
 using System.Text;
-
-using Met.Core.Proto;
 
 namespace Met.Core.Extensions
 {

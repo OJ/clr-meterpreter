@@ -1,7 +1,6 @@
-﻿using System.Linq;
-using System.Security.Cryptography;
-using Met.Core.Extensions;
+﻿using Met.Core.Extensions;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace Met.Core.Proto
 {

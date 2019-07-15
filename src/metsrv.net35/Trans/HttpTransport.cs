@@ -1,7 +1,7 @@
 ﻿using Met.Core.Extensions;
+using Met.Core.Proto;
 using System;
 using System.IO;
-using Met.Core.Proto;
 
 namespace Met.Core.Trans
 {
