@@ -52,6 +52,9 @@
     <Compile Include="..\stdapi.net35\SysConfig.cs">
       <Link>SysConfig.cs</Link>
     </Compile>
+    <Compile Include="..\stdapi.net35\SysProcess.cs">
+      <Link>SysProcess.cs</Link>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

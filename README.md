@@ -17,7 +17,7 @@ This is just for my own accounting when we're done. I need to remember the thing
 * Submit questions and comments in the suggestions box on my [Twitch](https://twitch.tv/ojreeves) page (and subscribe, if and when I finally make it to affiliate).
 * Feel free to submit an issue in this repo if you feel the need, but I'd prefer the suggestion box.
 * Hit me up on [Twitter](https://twitter.com/TheColonial).
-* Join in on the [Discord channel](https://discord.gg/358tQxf).
+* Join in on the [Discord channel](https://discord.gg/mabFmst).
 * Support me on [Patreon](https://patreon.com/ojreeves).
 
 ## Pull Requests
@@ -30,3 +30,4 @@ If you want to get involved with the coding, get in on the streams and participa
 
 * [Parts 1 to 10](../master/Parts-1-to-10.md)
 * [Parts 11 to 20](../master/Parts-11-to-20.md)
+* [Parts 21 to 30](../master/Parts-21-to-30.md)

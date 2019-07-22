@@ -1,4 +1,5 @@
-﻿using System.Reflection;
+﻿using System;
+using System.Reflection;
 
 namespace Met.Core.Extensions
 {
@@ -14,6 +15,43 @@ namespace Met.Core.Extensions
         {
             var field = obj.GetType().GetField(name, BindingFlags.NonPublic | BindingFlags.Instance);
             return (T)field.GetValue(obj);
+        }
+
+        public static TResult Pokemon<T, TResult>(this T obj, Func<T, TResult> f, TResult def = default(TResult))
+        {
+            try
+            {
+                return f(obj);
+            }
+            catch
+            {
+                // gotta catch 'em all
+                return def;
+            }
+        }
+
+        public static void Pokemon<T, TResult>(this T obj, Func<T, TResult> f, Action<TResult> a)
+        {
+            try
+            {
+                a(f(obj));
+            }
+            catch
+            {
+                // gotta catch 'em all
+            }
+        }
+
+        public static void Pokemon<T>(this T obj, Action<T> a)
+        {
+            try
+            {
+                a(obj);
+            }
+            catch
+            {
+                // gotta catch 'em all
+            }
         }
     }
 }

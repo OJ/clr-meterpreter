@@ -122,6 +122,15 @@ namespace Met.Core.Proto
         StdapiNetmaskString = MetaType.String | (StdapiPlugin + 1441u),
         StdapiGatewayString = MetaType.String | (StdapiPlugin + 1442u),
         StdapiRouteMetric = MetaType.Uint | (StdapiPlugin + 1443u),
+        StdapiProcessId = MetaType.Uint | (StdapiPlugin + 2300u),
+        StdapiProcessName = MetaType.String | (StdapiPlugin + 2301u),
+        StdapiProcessPath = MetaType.String | (StdapiPlugin + 2302u),
+        StdapiProcessGroup = MetaType.Group | (StdapiPlugin + 2303u),
+        StdapiProcessFlags = MetaType.Uint | (StdapiPlugin + 2304u),
+        StdapiProcessArguments = MetaType.String | (StdapiPlugin + 2305u),
+        StdapiProcessArch = MetaType.Uint | (StdapiPlugin + 2306u),
+        StdapiProcessParentProcessId = MetaType.Uint | (StdapiPlugin + 2307u),
+        StdapiProcessSession = MetaType.Uint | (StdapiPlugin + 2308u),
     }
 
     public class Tlv

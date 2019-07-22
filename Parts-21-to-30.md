@@ -10,3 +10,11 @@ Managed to bash out a few smaller features, and it was nice to not have epic fai
 We'll be tackling channel management on a future stream, and probably one that's going to go for more than two hours!
 
 [Vimeo](https://vimeo.com/348152283) - [YouTube](https://youtu.be/EmhslnJ7Ljg)
+
+# Part 22 - 22 July 2019 @ 20:00 AEST
+
+More features done! We implemened `getpid`, which was a no-brainer, but then worked through the pain of `kill`, which behind the scenes relied on the ability to call `ps`, so we implemented that as best we could. It wasn't nice though.
+
+Thanks [@atwolf](https://twitter.com/atwolf) for capturing [the best moment of the stream](https://clips.twitch.tv/SpicyRamshackleCasetteWow).
+
+[Vimeo](https://vimeo.com/349435899) - [YouTube](https://youtu.be/H4HRblDpCrs)

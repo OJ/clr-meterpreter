@@ -9,6 +9,12 @@ using System.Threading;
 
 namespace Met.Stdapi
 {
+    public enum SystemArchictecture : uint
+    {
+        X86 = 1u,
+        X64 = 2u
+    }
+
     public class SysConfig
     {
         private const uint VER_NT_WORKSTATION = 1u;
@@ -105,7 +111,12 @@ namespace Met.Stdapi
             }
         }
 
-        private string GetSystemArchitecture()
+        public static SystemArchictecture GetSystemArchitectureId()
+        {
+            return GetSystemArchitecture() == "x86" ? SystemArchictecture.X86 : SystemArchictecture.X64;
+        }
+
+        public static string GetSystemArchitecture()
         {
             var arch = Environment.GetEnvironmentVariable("PROCESSOR_ARCHITECTUREW6432");
             if (string.IsNullOrEmpty(arch))

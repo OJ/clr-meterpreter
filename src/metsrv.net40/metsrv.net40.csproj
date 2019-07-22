@@ -57,6 +57,9 @@
     <Compile Include="..\metsrv.net35\Extensions\ObjectExtensions.cs">
       <Link>Extensions\ObjectExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\ProcessExtensions.cs">
+      <Link>Extensions\ProcessExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\metsrv.net35\Extensions\RSACryptoServiceProviderExtensions.cs">
       <Link>Extensions\RSACryptoServiceProviderExtensions.cs</Link>
     </Compile>
