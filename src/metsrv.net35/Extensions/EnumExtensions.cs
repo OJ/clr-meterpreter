@@ -1,4 +1,5 @@
 ﻿using Met.Core.Proto;
+using System;
 
 namespace Met.Core.Extensions
 {
@@ -9,9 +10,9 @@ namespace Met.Core.Extensions
             return (MetaType)((TlvType)MetaType.All & tlvType);
         }
 
-        public static bool HasFlag(this MetaType metaType, MetaType flag)
+        public static bool HasFlag(this Enum mask, Enum flag)
         {
-            return (metaType & flag) == flag;
+            return (Convert.ToUInt64(mask) & Convert.ToUInt64(flag)) == Convert.ToUInt64(flag);
         }
     }
 }

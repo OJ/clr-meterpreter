@@ -104,6 +104,15 @@ namespace Met.Core.Proto
         StdapiEnvVariable = MetaType.String | (StdapiPlugin + 1100u),
         StdapiEnvValue = MetaType.String | (StdapiPlugin + 1101u),
         StdapiEnvGroup = MetaType.Group | (StdapiPlugin + 1102u),
+        StdapiDirectoryPath = MetaType.String | (StdapiPlugin + 1200u),
+        StdapiFileName = MetaType.String | (StdapiPlugin + 1201u),
+        StdapiFilePath = MetaType.String | (StdapiPlugin + 1202u),
+        StdapiFileMode = MetaType.String | (StdapiPlugin + 1203u),
+        StdapiFileSize = MetaType.Uint | (StdapiPlugin + 1204u),
+        StdapiFileShortName = MetaType.String | (StdapiPlugin + 1205u),
+        StdapiFileHash = MetaType.Raw | (StdapiPlugin + 1206u),
+        StdapiStatBuf32 = MetaType.Complex | (StdapiPlugin + 1220u),
+        StdapiStatBuf = MetaType.Complex | (StdapiPlugin + 1221u),
         StdapiInterfaceMtu = MetaType.Uint | (StdapiPlugin + 1402u),
         StdapiInterfaceFlags = MetaType.String | (StdapiPlugin + 1403u),
         StdapiInterfaceIndex = MetaType.Uint | (StdapiPlugin + 1404u),
@@ -183,6 +192,7 @@ namespace Met.Core.Proto
                             this.value = reader.ReadQword();
                             break;
                         }
+                    case MetaType.Complex:
                     case MetaType.Raw:
                         {
                             this.value = reader.ReadBytes((int)length);
@@ -199,7 +209,6 @@ namespace Met.Core.Proto
                             break;
                         }
                     case MetaType.None:
-                    case MetaType.Complex:
                         {
                             throw new NotImplementedException(string.Format("Sorry, don't support {0} yet", metaType));
                         }
@@ -266,6 +275,7 @@ namespace Met.Core.Proto
                             break;
                         }
                     case MetaType.Raw:
+                    case MetaType.Complex:
                         {
                             var val = this.ValueAsRaw();
                             writer.WriteDword((UInt32)val.Length + 8u);
@@ -274,7 +284,6 @@ namespace Met.Core.Proto
                             break;
                         }
                     case MetaType.None:
-                    case MetaType.Complex:
                     case MetaType.Compressed:
                         {
                             throw new NotImplementedException(string.Format("Sorry, don't support {0} yet", metaType));
@@ -326,7 +335,7 @@ namespace Met.Core.Proto
         {
             this.Type = type;
             this.value = value;
-            ValidateMetaType(MetaType.Raw);
+            ValidateMetaType(MetaType.Raw, MetaType.Complex);
         }
 
         public Tlv(TlvType type, bool value)
@@ -461,11 +470,11 @@ namespace Met.Core.Proto
         }
 #endif
 
-        private void ValidateMetaType(MetaType expectedType)
+        private void ValidateMetaType(params MetaType[] expectedTypes)
         {
-            if (this.Type.ToMetaType() != expectedType)
+            if (!expectedTypes.Contains(this.Type.ToMetaType()))
             {
-                throw new InvalidOperationException(string.Format("Expecting MetaType {0} but provided type {1}", expectedType, this.Type));
+                throw new InvalidOperationException(string.Format("Expecting MetaType {0} but provided type {1}", expectedTypes, this.Type));
             }
         }
 

@@ -13,6 +13,8 @@ namespace Met.Core.Proto
         Success = 0u,
         InvalidData = 13u,
         CallNotImplemented = 120u,
+        BadArguments = 160u,
+        ErrorAlreadyExists = 183u,
     }
 
     public enum PacketType : UInt32
@@ -185,6 +187,17 @@ namespace Met.Core.Proto
         public Tlv Add(TlvType type, UInt64 value)
         {
             return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add<T>(TlvType type, T value) where T : struct
+        {
+            var meta = type.ToMetaType();
+            if (meta != MetaType.Raw && meta != MetaType.Complex)
+            {
+                throw new ArgumentException(string.Format("Unable to serialise struct to type: {0}", meta));
+            }
+
+            return this.Add(new Tlv(type, value.ToByteArray()));
         }
 
         public Tlv AddGroup(TlvType type)

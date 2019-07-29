@@ -48,8 +48,14 @@
     <Compile Include="..\metsrv.net35\Extensions\BinaryWriterExtensions.cs">
       <Link>Extensions\BinaryWriterExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\DateTimeExtensions.cs">
+      <Link>Extensions\DateTimeExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\metsrv.net35\Extensions\EnumExtensions.cs">
       <Link>Extensions\EnumExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\FileSystemExtensions.cs">
+      <Link>Extensions\FileSystemExtensions.cs</Link>
     </Compile>
     <Compile Include="..\metsrv.net35\Extensions\IEnumerableExtensions.cs">
       <Link>Extensions\IEnumerableExtensions.cs</Link>
@@ -62,6 +68,9 @@
     </Compile>
     <Compile Include="..\metsrv.net35\Extensions\RSACryptoServiceProviderExtensions.cs">
       <Link>Extensions\RSACryptoServiceProviderExtensions.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\TlvDictionaryExtensions.cs">
+      <Link>Extensions\TlvDictionaryExtensions.cs</Link>
     </Compile>
     <Compile Include="..\metsrv.net35\Extensions\UnicastIPAddressInformationExtensions.cs">
       <Link>Extensions\UnicastIPAddressInformationExtensions.cs</Link>

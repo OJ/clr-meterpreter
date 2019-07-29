@@ -18,3 +18,9 @@ More features done! We implemened `getpid`, which was a no-brainer, but then wor
 Thanks [@atwolf](https://twitter.com/atwolf) for capturing [the best moment of the stream](https://clips.twitch.tv/SpicyRamshackleCasetteWow).
 
 [Vimeo](https://vimeo.com/349435899) - [YouTube](https://youtu.be/H4HRblDpCrs)
+
+# Part 23 - 29 July 2019 @ 19:30 AEST
+
+Worked through some more STDAPI features tonight, mostly revolving around file system related things (such as working folders, creating and removing directories, etc). We ended up trying to implement the first pass of `ls` which requried `stat` functionality. That turned out to be painful, but we're close to finishing that off. We ended up getting close but failed at the last hurdle where we're trying to serialize the STAT BUF complex type. We'll get this sorted on the next stream.
+
+[Vimeo](https://vimeo.com/350724825) - [YouTube](https://youtu.be/fstk2GW_L-o)
