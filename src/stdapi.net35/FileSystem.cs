@@ -1,12 +1,23 @@
 ﻿using Met.Core;
-using Met.Core.Proto;
 using Met.Core.Extensions;
+using Met.Core.Proto;
+using System;
+using System.IO;
 using System.Runtime.InteropServices;
+using System.Text;
 
 namespace Met.Stdapi
 {
     public class FileSystem
     {
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern uint GetShortPathName(
+            [MarshalAs(UnmanagedType.LPTStr)]
+            string lpszLongPath,
+            [MarshalAs(UnmanagedType.LPTStr)]
+            StringBuilder lpszShortPath,
+            int cchBuffer);
+
         public void Register(string name, PluginManager manager)
         {
             manager.RegisterFunction(name, "stdapi_fs_separator", false, this.GetFileSystemSeperator);
@@ -41,23 +52,7 @@ namespace Met.Stdapi
 
             fileTlv.Pokemon(f =>
             {
-                var path = f.ValueAsString();
-
-                var fi = new System.IO.FileInfo(path);
-
-                var s = new MeterpStat
-                {
-                    st_mode = fi.ToMode(),
-                    st_ctime = fi.CreationTime.ToUnixTimestamp(),
-                    st_mtime = fi.LastWriteTime.ToUnixTimestamp(),
-                    st_atime = fi.LastAccessTime.ToUnixTimestamp(),
-                };
-
-                if (!fi.IsDirectory())
-                {
-                    s.st_size = (ulong)fi.Length;
-                }
-
+                var s = FileStat(f.ValueAsString());
                 response.Add(TlvType.StdapiStatBuf, s);
                 result = PacketResult.Success;
             });
@@ -73,10 +68,16 @@ namespace Met.Stdapi
 
             dirTlv.Pokemon(d =>
             {
-                foreach (var entry in System.IO.Directory.GetFileSystemEntries(dirTlv.ValueAsString()))
+                var dir = dirTlv.ValueAsString();
+                foreach (var entry in Directory.GetFileSystemEntries(dir))
                 {
-                    response.Add(TlvType.StdapiFileName, entry);
+                    var shortName = ToShortName(entry);
+                    response.Add(TlvType.StdapiFileName, Path.GetFileName(entry));
+                    response.Add(TlvType.StdapiFileShortName, Path.GetFileName(shortName));
+                    response.Add(TlvType.StdapiFilePath, entry);
+                    response.Add(TlvType.StdapiStatBuf, FileStat(entry));
                 }
+
                 result = PacketResult.Success;
             });
 
@@ -91,7 +92,7 @@ namespace Met.Stdapi
 
             dirTlv.Pokemon(d =>
             {
-                System.Environment.CurrentDirectory = d.ValueAsString();
+                Environment.CurrentDirectory = d.ValueAsString();
                 result = PacketResult.Success;
             });
 
@@ -101,7 +102,7 @@ namespace Met.Stdapi
 
         private InlineProcessingResult GetCurrentDirectory(Packet request, Packet response)
         {
-            response.Add(TlvType.StdapiDirectoryPath, System.Environment.CurrentDirectory);
+            response.Add(TlvType.StdapiDirectoryPath, Environment.CurrentDirectory);
             response.Result = PacketResult.Success;
             return InlineProcessingResult.Continue;
         }
@@ -114,11 +115,11 @@ namespace Met.Stdapi
             if (dirTlv != null)
             {
                 var dir = dirTlv.ValueAsString();
-                if (System.IO.Directory.Exists(dir))
+                if (Directory.Exists(dir))
                 {
                     try
                     {
-                        System.IO.Directory.Delete(dir);
+                        Directory.Delete(dir);
                         result = PacketResult.Success;
                     }
                     catch
@@ -140,11 +141,11 @@ namespace Met.Stdapi
             if (dirTlv != null)
             {
                 var dir = dirTlv.ValueAsString();
-                if (!System.IO.Directory.Exists(dir))
+                if (!Directory.Exists(dir))
                 {
                     try
                     {
-                        System.IO.Directory.CreateDirectory(dir);
+                        Directory.CreateDirectory(dir);
                         result = PacketResult.Success;
                     }
                     catch
@@ -164,9 +165,40 @@ namespace Met.Stdapi
 
         private InlineProcessingResult GetFileSystemSeperator(Packet request, Packet response)
         {
-            response.Add(TlvType.String, System.IO.Path.DirectorySeparatorChar.ToString());
+            response.Add(TlvType.String, Path.DirectorySeparatorChar.ToString());
             response.Result = PacketResult.Success;
             return InlineProcessingResult.Continue;
+        }
+
+        private MeterpStat FileStat(string path)
+        {
+            var fi = new FileInfo(path);
+
+            var s = new MeterpStat
+            {
+                st_mode = fi.ToMode(),
+                st_ctime = fi.CreationTime.ToUnixTimestamp(),
+                st_mtime = fi.LastWriteTime.ToUnixTimestamp(),
+                st_atime = fi.LastAccessTime.ToUnixTimestamp(),
+            };
+
+            if (!fi.IsDirectory())
+            {
+                s.st_size = (ulong)fi.Length;
+            }
+
+            return s;
+        }
+
+        private string ToShortName(string longName)
+        {
+            // get the required length first, as this can be huge in cases
+            // where the target has long file names enabled (which can be
+            // up to 32767 chars long).
+            var size = GetShortPathName(longName, null, 0);
+            var sb = new StringBuilder((int)size + 1);
+            GetShortPathName(longName, sb, sb.Capacity);
+            return sb.ToString();
         }
     }
 }

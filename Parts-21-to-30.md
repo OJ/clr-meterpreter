@@ -24,3 +24,9 @@ Thanks [@atwolf](https://twitter.com/atwolf) for capturing [the best moment of t
 Worked through some more STDAPI features tonight, mostly revolving around file system related things (such as working folders, creating and removing directories, etc). We ended up trying to implement the first pass of `ls` which requried `stat` functionality. That turned out to be painful, but we're close to finishing that off. We ended up getting close but failed at the last hurdle where we're trying to serialize the STAT BUF complex type. We'll get this sorted on the next stream.
 
 [Vimeo](https://vimeo.com/350724825) - [YouTube](https://youtu.be/fstk2GW_L-o)
+
+# Part 24 - 6 August 2019 @ 10:00 AEST
+
+First of the streams done in the morning! Fixed up the file stat functionality, and finally made the first version of the `ls` command work. We don't yet support globbing, so that will work down the track. At least we finished on a positive note! I did go down a couple of debugging paths that I didn't need to go down, but hey. It was a good learning experience for us all on how not to do things :)
+
+[Vimeo](https://vimeo.com/352175807) - [YouTube](https://youtu.be/Ktows-47jAs)

@@ -32,7 +32,7 @@ namespace Met.Core.Extensions
 
             if (info.IsDirectory())
             {
-                mode |= _S_IFDIR | 0111u;
+                mode |= _S_IFDIR | 0x49u;
             }
             else
             {
@@ -41,16 +41,16 @@ namespace Met.Core.Extensions
 
             if (info.Attributes.HasFlag(FileAttributes.ReadOnly))
             {
-                mode |= 0444u;
+                mode |= 0x124;
             }
             else
             {
-                mode |= 0666u;
+                mode |= 0x1B6u;
             }
 
             if (info.IsExecutable())
             {
-                mode |= 0111u;
+                mode |= 0x49u;
             }
 
             return mode;
