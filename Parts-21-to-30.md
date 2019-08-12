@@ -30,3 +30,17 @@ Worked through some more STDAPI features tonight, mostly revolving around file s
 First of the streams done in the morning! Fixed up the file stat functionality, and finally made the first version of the `ls` command work. We don't yet support globbing, so that will work down the track. At least we finished on a positive note! I did go down a couple of debugging paths that I didn't need to go down, but hey. It was a good learning experience for us all on how not to do things :)
 
 [Vimeo](https://vimeo.com/352175807) - [YouTube](https://youtu.be/Ktows-47jAs)
+
+# Part 25 - 12 August 2019 @ 20:00 AEST
+
+Great stream tonight. Was happy with the result. We managed to get the globbing functionality finished in the `ls` command, and also bashed out support for:
+
+* MD5 and SHA1 checksums
+* File delete, move and copy
+* Showing local drives/mounts
+
+I skipped on the `search` function for now because that's going to be a bit of a PITA to implement. Might have to dedicate a whole stream to it.
+
+Attendence was really good. We had some very old faces, very new faces, and very regular faces show up. The chat was really fun and constant. Hope to see you all on the next one too!
+
+[Vimeo](https://vimeo.com/353346087) - [YouTube](https://youtu.be/EdlU3of_dM0)
