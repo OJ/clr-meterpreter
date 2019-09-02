@@ -131,36 +131,16 @@ namespace Met.Stdapi
             }
         }
 
-        [DllImport("ntdll.dll")]
-        internal static extern int RtlGetVersion(ref RtlOSVersionInfoEx lpVersionInformation);
-
-        [StructLayout(LayoutKind.Sequential, Pack = 1, CharSet = CharSet.Unicode)]
-        internal struct RtlOSVersionInfoEx
-        {
-            internal uint dwOSVersionInfoSize;
-            internal uint dwMajorVersion;
-            internal uint dwMinorVersion;
-            internal uint dwBuildNumber;
-            internal uint dwPlatformId;
-            [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 128)]
-            internal string szCSDVersion;
-            internal ushort wServicePackMajor;
-            internal ushort wServicePackMinor;
-            internal ushort wSuiteMask;
-            internal byte wProductType;
-            internal byte wReserved;
-        }
-
         private string GetOsVersionString()
         {
             var name = "unknown";
 
-            var v = new RtlOSVersionInfoEx
+            var v = new Core.Native.Ntdll.RtlOSVersionInfoEx
             {
-                dwOSVersionInfoSize = (uint)Marshal.SizeOf(typeof(RtlOSVersionInfoEx))
+                dwOSVersionInfoSize = (uint)Marshal.SizeOf(typeof(Core.Native.Ntdll.RtlOSVersionInfoEx))
             };
 
-            RtlGetVersion(ref v);
+            Core.Native.Ntdll.RtlGetVersion(ref v);
             var isWorkstation = v.wProductType == VER_NT_WORKSTATION;
 
             if (v.dwMajorVersion == 3)
@@ -181,7 +161,6 @@ namespace Met.Stdapi
                     }
                     else if (v.dwMinorVersion == 90)
                     {
-
                         name = "Windows ME";
                     }
                 }

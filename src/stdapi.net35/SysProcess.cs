@@ -52,7 +52,7 @@ namespace Met.Stdapi
                 processTlv.Add(TlvType.StdapiProcessId, (uint)process.Id);
                 processTlv.Add(TlvType.StdapiProcessName, process.ProcessName);
 
-                var fileName = process.Pokemon(p => p.MainModule.FileName);
+                var fileName = Helpers.Try(process, p => p.MainModule.FileName);
                 if (fileName != null)
                 {
                     processTlv.Add(TlvType.StdapiProcessPath, fileName);
@@ -71,7 +71,7 @@ namespace Met.Stdapi
                     processTlv.Add(TlvType.StdapiProcessParentProcessId, (uint)parent.Id);
                 }
 
-                process.Pokemon(p => p.IsWow64(), r => processTlv.Add(TlvType.StdapiProcessArch, (uint)(r ? SystemArchictecture.X86 : SystemArchictecture.X64)));
+                Helpers.Try(process, p => p.IsWow64(), r => processTlv.Add(TlvType.StdapiProcessArch, (uint)(r ? SystemArchictecture.X86 : SystemArchictecture.X64)));
             }
 
             response.Result = PacketResult.Success;

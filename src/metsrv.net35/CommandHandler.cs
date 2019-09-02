@@ -12,18 +12,6 @@ namespace Met.Core
 {
     public class CommandHandler
     {
-        [DllImport("Kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        public extern static bool GetVolumeInformation(
-            string rootPathName,
-            StringBuilder volumeName,
-            int volumeNameSize,
-            out uint volumeSerialNumber,
-            out uint maximumComponentLength,
-            out uint fileSystemFlags,
-            StringBuilder fileSystemName,
-            int fileSystemNameSize);
-
         public void Register(PluginManager manager)
         {
             manager.RegisterFunction(string.Empty, "core_machine_id", false, this.CoreMachineId);
@@ -83,7 +71,7 @@ namespace Met.Core
             var fsname = new StringBuilder(261);
             uint serialNumber = 0, maxLength = 0, flags = 0;
 
-            GetVolumeInformation(sysDrive, volname, volname.Capacity, out serialNumber, out maxLength, out flags, fsname, fsname.Capacity);
+            Core.Native.Kernel32.GetVolumeInformation(sysDrive, volname, volname.Capacity, out serialNumber, out maxLength, out flags, fsname, fsname.Capacity);
 
             var machineId = string.Format("{0,04:x}-{1,04:x}:{2}", (ushort)(serialNumber >> 16), (ushort)serialNumber, Environment.MachineName);
 

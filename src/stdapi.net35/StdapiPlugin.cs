@@ -8,6 +8,7 @@ namespace Met.Stdapi
         private NetConfig netConfig;
         private FileSystem fileSystem;
         private SysProcess sysProcess;
+        private SysPower sysPower;
 
         public string Name => "stdapi";
 
@@ -17,6 +18,7 @@ namespace Met.Stdapi
             this.netConfig = new NetConfig();
             this.fileSystem = new FileSystem();
             this.sysProcess = new SysProcess();
+            this.sysPower = new SysPower();
         }
 
         public void Init(byte[] initBytes)
@@ -29,6 +31,7 @@ namespace Met.Stdapi
             this.netConfig.Register(this.Name, manager);
             this.fileSystem.Register(this.Name, manager);
             this.sysProcess.Register(this.Name, manager);
+            this.sysPower.Register(this.Name, manager);
             //manager.RegisterFunction(this.Name, "core_channel_open", false, this.CoreChannelOpen);
         }
 

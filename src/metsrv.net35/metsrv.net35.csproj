@@ -51,7 +51,13 @@
     <Compile Include="Extensions\RSACryptoServiceProviderExtensions.cs" />
     <Compile Include="Extensions\UnicastIPAddressInformationExtensions.cs" />
     <Compile Include="FileSystemFeature.cs" />
+    <Compile Include="Helpers.cs" />
     <Compile Include="IPlugin.cs" />
+    <Compile Include="Native\Advapi32.cs" />
+    <Compile Include="Native\Kernel32.cs" />
+    <Compile Include="Native\Mpr.cs" />
+    <Compile Include="Native\Ntdll.cs" />
+    <Compile Include="Native\User32.cs" />
     <Compile Include="PluginManager.cs" />
     <Compile Include="Proto\Packet.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

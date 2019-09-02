@@ -19,7 +19,12 @@ namespace TestConsole
         static void SimpleTcpStageTest()
         {
             var tcpClient = new TcpClient();
-            tcpClient.Connect("192.168.146.156", 4444);
+#if NET40
+            var port = 4447;
+#else
+            var port = 4444;
+#endif
+            tcpClient.Connect("192.168.146.156", port);
             if (tcpClient.Connected)
             {
                 using (var s = tcpClient.GetStream())

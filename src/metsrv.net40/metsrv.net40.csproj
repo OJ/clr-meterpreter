@@ -78,8 +78,26 @@
     <Compile Include="..\metsrv.net35\FileSystemFeature.cs">
       <Link>FileSystemFeature.cs</Link>
     </Compile>
+    <Compile Include="..\metsrv.net35\Helpers.cs">
+      <Link>Helpers.cs</Link>
+    </Compile>
     <Compile Include="..\metsrv.net35\IPlugin.cs">
       <Link>IPlugin.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Native\Advapi32.cs">
+      <Link>Native\Advapi32.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Native\Kernel32.cs">
+      <Link>Native\Kernel32.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Native\Mpr.cs">
+      <Link>Native\Mpr.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Native\Ntdll.cs">
+      <Link>Native\Ntdll.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Native\User32.cs">
+      <Link>Native\User32.cs</Link>
     </Compile>
     <Compile Include="..\metsrv.net35\PluginManager.cs">
       <Link>PluginManager.cs</Link>

@@ -80,7 +80,7 @@ namespace Met.Stdapi
             var fileTlv = request.Tlvs.TryGetTlv(TlvType.StdapiFilePath);
             var result = PacketResult.BadArguments;
 
-            fileTlv.Pokemon(f =>
+            Helpers.Try(fileTlv, f =>
             {
                 var file = Environment.ExpandEnvironmentVariables(f.ValueAsString());
                 using (var hash = hashGenerator())
@@ -97,10 +97,9 @@ namespace Met.Stdapi
 
         private InlineProcessingResult Stat(Packet request, Packet response)
         {
-            var fileTlv = request.Tlvs.TryGetTlv(TlvType.StdapiFilePath);
             var result = PacketResult.BadArguments;
 
-            fileTlv.Pokemon(f =>
+            Helpers.Try(request.Tlvs.TryGetTlv(TlvType.StdapiFilePath), f =>
             {
                 var s = FileStat(Environment.ExpandEnvironmentVariables(f.ValueAsString()));
                 response.Add(TlvType.StdapiStatBuf, s);
@@ -113,12 +112,11 @@ namespace Met.Stdapi
 
         private InlineProcessingResult ListEntries(Packet request, Packet response)
         {
-            var dirTlv = request.Tlvs.TryGetTlv(TlvType.StdapiDirectoryPath);
             var result = PacketResult.BadArguments;
 
-            dirTlv.Pokemon(d =>
+            Helpers.Try(request.Tlvs.TryGetTlv(TlvType.StdapiDirectoryPath), d =>
             {
-                var dir = Environment.ExpandEnvironmentVariables(dirTlv.ValueAsString());
+                var dir = Environment.ExpandEnvironmentVariables(d.ValueAsString());
                 foreach (var entry in EnumerateFileSystemEntries(dir))
                 {
                     var shortName = ToShortName(entry);
@@ -157,10 +155,9 @@ namespace Met.Stdapi
 
         private InlineProcessingResult ExpandPath(Packet request, Packet response)
         {
-            var fileTlv = request.Tlvs.TryGetTlv(TlvType.StdapiFilePath);
             var result = PacketResult.BadArguments;
 
-            fileTlv.Pokemon(f =>
+            Helpers.Try(request.Tlvs.TryGetTlv(TlvType.StdapiFilePath), f =>
             {
                 response.Add(TlvType.StdapiFilePath, Environment.ExpandEnvironmentVariables(f.ValueAsString()));
                 result = PacketResult.Success;
@@ -172,10 +169,9 @@ namespace Met.Stdapi
 
         private InlineProcessingResult SetCurrentDirectory(Packet request, Packet response)
         {
-            var dirTlv = request.Tlvs.TryGetTlv(TlvType.StdapiDirectoryPath);
             var result = PacketResult.BadArguments;
 
-            dirTlv.Pokemon(d =>
+            Helpers.Try(request.Tlvs.TryGetTlv(TlvType.StdapiDirectoryPath), d =>
             {
                 Environment.CurrentDirectory = Environment.ExpandEnvironmentVariables(d.ValueAsString());
                 result = PacketResult.Success;
@@ -336,38 +332,16 @@ namespace Met.Stdapi
             return s;
         }
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern uint GetShortPathName(
-            [MarshalAs(UnmanagedType.LPTStr)]
-            string lpszLongPath,
-            [MarshalAs(UnmanagedType.LPTStr)]
-            StringBuilder lpszShortPath,
-            int cchBuffer);
-
         private string ToShortName(string longName)
         {
             // get the required length first, as this can be huge in cases
             // where the target has long file names enabled (which can be
             // up to 32767 chars long).
-            var size = GetShortPathName(longName, null, 0);
+            var size = Core.Native.Kernel32.GetShortPathName(longName, null, 0);
             var sb = new StringBuilder((int)size + 1);
-            GetShortPathName(longName, sb, sb.Capacity);
+            Core.Native.Kernel32.GetShortPathName(longName, sb, sb.Capacity);
             return sb.ToString();
         }
-
-        [DllImport("mpr.dll", CharSet = CharSet.Unicode)]
-        [return: MarshalAs(UnmanagedType.U4)]
-        static extern int WNetGetUniversalName(
-            string lpLocalPath,
-            [MarshalAs(UnmanagedType.U4)]
-            int dwInfoLevel,
-            IntPtr lpBuffer,
-            [MarshalAs(UnmanagedType.U4)]
-            ref int lpBufferSize);
- 
-        private const int UNIVERSAL_NAME_INFO_LEVEL = 0x00000001;
-        private const int ERROR_MORE_DATA = 234;
-        private const int NOERROR = 0;
 
         private static string GetUniversalName(string localPath)
         {
@@ -378,20 +352,22 @@ namespace Met.Stdapi
             {
                 int size = 0;
 
-                int apiRetVal = WNetGetUniversalName(localPath, UNIVERSAL_NAME_INFO_LEVEL, (IntPtr)IntPtr.Size, ref size);
+                var apiRetVal = Core.Native.Mpr.WNetGetUniversalName(localPath,
+                    Core.Native.Mpr.InfoLevel.UNIVERSAL_NAME_INFO_LEVEL, (IntPtr)IntPtr.Size, ref size);
 
-                if (apiRetVal != ERROR_MORE_DATA)
+                if (apiRetVal != Core.Native.Mpr.GetUniversalNameResult.ERROR_MORE_DATA)
                 {
-                    throw new Win32Exception(apiRetVal);
+                    throw new Win32Exception((int)apiRetVal);
                 }
 
                 buffer = Marshal.AllocCoTaskMem(size);
 
-                apiRetVal = WNetGetUniversalName(localPath, UNIVERSAL_NAME_INFO_LEVEL, buffer, ref size);
+                apiRetVal = Core.Native.Mpr.WNetGetUniversalName(localPath,
+                    Core.Native.Mpr.InfoLevel.UNIVERSAL_NAME_INFO_LEVEL, buffer, ref size);
 
-                if (apiRetVal != NOERROR)
+                if (apiRetVal != Core.Native.Mpr.GetUniversalNameResult.NOERROR)
                 {
-                    throw new Win32Exception(apiRetVal);
+                    throw new Win32Exception((int)apiRetVal);
                 }
 
                 universalName = Marshal.PtrToStringAuto(new IntPtr(buffer.ToInt64() + IntPtr.Size), size);

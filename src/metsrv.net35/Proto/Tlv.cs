@@ -147,6 +147,8 @@ namespace Met.Core.Proto
         StdapiProcessArch = MetaType.Uint | (StdapiPlugin + 2306u),
         StdapiProcessParentProcessId = MetaType.Uint | (StdapiPlugin + 2307u),
         StdapiProcessSession = MetaType.Uint | (StdapiPlugin + 2308u),
+        StdapiPowerFlags= MetaType.Uint | (StdapiPlugin + 4100u),
+        StdapiPowerReason= MetaType.Uint | (StdapiPlugin + 4101u),
     }
 
     public class Tlv
