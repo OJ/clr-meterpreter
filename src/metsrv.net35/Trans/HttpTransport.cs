@@ -14,6 +14,7 @@ namespace Met.Core.Trans
         private const int CERT_HASH_SIZE = 20;
 
         private Session session;
+        private System.Net.WebClient webClient;
 
         public TransportConfig Config { get; private set; }
         public string ProxyHost { get; private set; }
@@ -51,14 +52,36 @@ namespace Met.Core.Trans
         {
         }
 
+        public void Wrap(System.Net.WebClient webClient)
+        {
+            this.webClient = webClient;
+        }
+
         public Packet ReceivePacket(PacketEncryptor packetEncryptor)
         {
-            throw new NotImplementedException();
+            var tlvData = this.webClient.DownloadData(this.Config.Uri);
+            var delay = 0;
+            var failCount = 0;
+
+            while (tlvData.Length == 0)
+            {
+                delay = 10 * failCount;
+                ++failCount;
+                System.Threading.Thread.Sleep(Math.Min(10000, delay));
+                tlvData = this.webClient.DownloadData(this.Config.Uri);
+            }
+
+            using (var tlvStream = new MemoryStream(tlvData))
+            using (var reader = new BinaryReader(tlvStream))
+            {
+                return new Packet(reader, packetEncryptor);
+            }
         }
 
         public void SendPacket(byte[] responsePacket)
         {
-            throw new NotImplementedException();
+            var wc = new System.Net.WebClient();
+            wc.UploadData(this.Config.Uri, responsePacket);
         }
     }
 }

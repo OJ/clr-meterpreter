@@ -50,3 +50,11 @@ Attendence was really good. We had some very old faces, very new faces, and very
 Good to be back at it tonight after a couple of weeks off (thanks to work and sickness). We got some stuff done. We tidied up a bunch of code (formalised the Pokemon stuff, and moved PInvoke to it's own area), which made me a lot happier. We then made some effort to "properly" support the two CLR versions, and that resulted in a bunch of changes on the MSF and Rex-Arch side. Finally we started work on support for `shutdown` and `reboot` commands, which as you can imagine took longer than expected. We'll aim to finish that off as part of next stream.
 
 [Rex-Arch commit](https://github.com/OJ/rex-arch/commit/281aaee0c5d148b9d45fe687815c013e8576e680) - [MSF Commit](https://github.com/OJ/metasploit-framework/commit/bf07d7ddfadab3b58b1765fcfb3c65dd5541dc82) - [Vimeo](https://vimeo.com/357335886) - [YouTube](https://youtu.be/EKKgJ7c1bqc)
+
+# Part 27 - 11 September 2019 @ 08:30 AEST
+
+This morning we started working on adding HTTP transport. It actually went quite well. We got started in the MSF side and implemented the basic payloads/handler stuff. Then we wired up some of the code on the Meterpreter side. We had to rebase our CLR code in MSF onto the current master branch because of a database issue, but that wasn't a huge problem. We did a little bit of refactoring so that we could reuse chunks of code, but the "pain" of the implementation was actually surprisingly low. We have got to the point where the comms works just fine, but we need to do some more work on the MSF side to make a few things wire up automatically.
+
+Next stream we'll probably finalise this stuff, add HTTPS support (which should be super easy) and finalise all the transport-related core functions.
+
+[MSF Commit](https://github.com/OJ/metasploit-framework/commit/a797a14b6c833b88ed71d41b2e7248c308ff5714) - [Vimeo](https://vimeo.com/359186482) - [YouTube](https://youtu.be/uF6ZPqyCLjs)

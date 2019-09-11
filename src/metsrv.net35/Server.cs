@@ -49,6 +49,12 @@ namespace Met.Core
             metSrv.Run(tcpClient);
         }
 
+        public static void Bootstrap(BinaryReader reader, System.Net.WebClient webClient)
+        {
+            var metSrv = new Server(reader);
+            metSrv.Run(webClient);
+        }
+
         public static void Bootstrap(BinaryReader reader)
         {
             var metSrv = new Server(reader);
@@ -62,6 +68,18 @@ namespace Met.Core
             if (transport != null)
             {
                 transport.Wrap(tcpClient);
+            }
+
+            Run();
+        }
+
+        public void Run(System.Net.WebClient webClient)
+        {
+            var transport = this.currentTransport as HttpTransport;
+
+            if (transport != null)
+            {
+                transport.Wrap(webClient);
             }
 
             Run();

