@@ -2,6 +2,9 @@
 using Met.Core.Proto;
 using System;
 using System.IO;
+using System.Net;
+using System.Net.Security;
+using System.Security.Cryptography.X509Certificates;
 
 namespace Met.Core.Trans
 {
@@ -14,7 +17,7 @@ namespace Met.Core.Trans
         private const int CERT_HASH_SIZE = 20;
 
         private Session session;
-        private System.Net.WebClient webClient;
+        private WebClient webClient;
 
         public TransportConfig Config { get; private set; }
         public string ProxyHost { get; private set; }
@@ -44,15 +47,22 @@ namespace Met.Core.Trans
 
         public bool Connect()
         {
+            ServicePointManager.ServerCertificateValidationCallback += SslValidator;
             // Always true
             return this.IsConnected;
         }
 
-        public void Dispose()
+        public void Disconnect()
         {
+            ServicePointManager.ServerCertificateValidationCallback -= SslValidator;
         }
 
-        public void Wrap(System.Net.WebClient webClient)
+        public void Dispose()
+        {
+            Disconnect();
+        }
+
+        public void Wrap(WebClient webClient)
         {
             this.webClient = webClient;
         }
@@ -80,8 +90,42 @@ namespace Met.Core.Trans
 
         public void SendPacket(byte[] responsePacket)
         {
-            var wc = new System.Net.WebClient();
+            var wc = CreateWebClient();
             wc.UploadData(this.Config.Uri, responsePacket);
+        }
+
+        private WebClient CreateWebClient()
+        {
+            var wc = new WebClient();
+            wc.UseDefaultCredentials = true;
+
+            if (!string.IsNullOrEmpty(this.ProxyHost))
+            {
+                wc.Proxy = new WebProxy(this.ProxyHost, true);
+
+                if (string.IsNullOrEmpty(this.ProxyUser))
+                {
+                    wc.Credentials = CredentialCache.DefaultNetworkCredentials;
+                }
+                else
+                {
+
+                    wc.Credentials = new NetworkCredential(this.ProxyUser, this.ProxyPass);
+                }
+            }
+
+            return wc;
+        }
+
+        private bool SslValidator(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            var req = sender as HttpWebRequest;
+            if (req != null && req.RequestUri == this.Config.Uri)
+            {
+                return true;
+            }
+
+            return SslPolicyErrors.None == sslPolicyErrors;
         }
     }
 }

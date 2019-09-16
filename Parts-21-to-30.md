@@ -58,3 +58,11 @@ This morning we started working on adding HTTP transport. It actually went quite
 Next stream we'll probably finalise this stuff, add HTTPS support (which should be super easy) and finalise all the transport-related core functions.
 
 [MSF Commit](https://github.com/OJ/metasploit-framework/commit/a797a14b6c833b88ed71d41b2e7248c308ff5714) - [Vimeo](https://vimeo.com/359186482) - [YouTube](https://youtu.be/uF6ZPqyCLjs)
+
+# Part 28 - 16 September 2019 @ 20:00 AEST
+
+Tonight we finished off support for HTTP and HTTPS transports in both CLR 2 and 4. Good night, despite some of the pain that we felt. Clearly some of the nicer features of .NET are in the later versions, such as being able to validate SSL certificates on a per-request basis.
+
+There's still more to do, and we'll aim to cover that off in the next stream. The first thing we'll do is add certificate hash validation to SSL so that we know we're close to feature parity with the native version. We also need to finish wiring in (and testing) other properties such as user agents (which we missed on tonight's stream). Oh well, such is life!
+
+[MSF Commit](https://github.com/OJ/metasploit-framework/commit/5aff55f1d0f6cd623733485ca2bf5ac7cb988540) - [Vimeo](https://vimeo.com/360255369) - [YouTube](https://youtu.be/Nn92F9uLo3Y)

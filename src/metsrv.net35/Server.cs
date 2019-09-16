@@ -116,11 +116,14 @@ namespace Met.Core
                         case InlineProcessingResult.Shutdown:
                             {
                                 running = false;
+                                this.currentTransport.Disconnect();
                                 break;
                             }
                         case InlineProcessingResult.NextTransport:
                             {
-                                // TODO: change transports
+                                this.currentTransport.Disconnect();
+                                this.transportIndex = (this.transportIndex + 1) % this.Transports.Count;
+                                this.currentTransport = this.Transports[this.transportIndex];
                                 break;
                             }
                         case InlineProcessingResult.Continue:
@@ -130,6 +133,7 @@ namespace Met.Core
                                 break;
                             }
                     }
+
                 }
             }
             catch (TimeoutException)
@@ -162,6 +166,9 @@ namespace Met.Core
             this.pluginManager.RegisterFunction(string.Empty, "core_shutdown", true, this.CoreShutdown);
             this.pluginManager.RegisterFunction(string.Empty, "core_negotiate_tlv_encryption", false, this.CoreNegotiateTlvEncryption);
             this.pluginManager.RegisterFunction(string.Empty, "core_transport_set_timeouts", false, this.TransportSetTimeouts);
+            this.pluginManager.RegisterFunction(string.Empty, "core_get_session_guid", false, this.CoreGetSessionGuid);
+            this.pluginManager.RegisterFunction(string.Empty, "core_set_session_guid", false, this.CoreSetSessionGuid);
+            this.pluginManager.RegisterFunction(string.Empty, "core_set_uuid", false, this.CoreSetUuid);
         }
 
         private InlineProcessingResult TransportSetTimeouts(Packet request, Packet response)
@@ -226,6 +233,27 @@ namespace Met.Core
         {
             response.Result = PacketResult.Success;
             return InlineProcessingResult.Shutdown;
+        }
+        
+        private InlineProcessingResult CoreGetSessionGuid(Packet request, Packet response)
+        {
+            response.Add(TlvType.SessionGuid, this.Session.SessionGuid);
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.Continue;
+        }
+        
+        private InlineProcessingResult CoreSetSessionGuid(Packet request, Packet response)
+        {
+            this.Session.SessionGuid = request.Tlvs[TlvType.SessionGuid][0].ValueAsRaw();
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.Continue;
+        }
+
+        private InlineProcessingResult CoreSetUuid(Packet request, Packet response)
+        {
+            this.Session.SessionUuid = request.Tlvs[TlvType.Uuid][0].ValueAsRaw();
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.Continue;
         }
 
         private InlineProcessingResult PacketDispatchLoop()

@@ -32,6 +32,7 @@ namespace Met.Core.Trans
                         return new TcpTransport(this, session);
                     }
                 case "http":
+                case "https":
                     {
                         return new HttpTransport(this, session);
                     }

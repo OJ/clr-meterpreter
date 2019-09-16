@@ -11,6 +11,7 @@ namespace Met.Core.Trans
 
         void Configure(BinaryReader reader);
         bool Connect();
+        void Disconnect();
 
         Packet ReceivePacket(PacketEncryptor packetEncryptor);
         void SendPacket(byte[] responsePacket);

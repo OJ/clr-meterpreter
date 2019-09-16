@@ -49,16 +49,8 @@ namespace Met.Core.Trans
 
             return this.IsConnected;
         }
-
-        public void Wrap(TcpClient tcpClient)
-        {
-            Dispose();
-            this.tcpClient = tcpClient;
-            this.tcpStream = this.tcpClient.GetStream();
-            this.tcpReader = new BinaryReader(this.tcpStream);
-        }
-
-        public void Dispose()
+        
+        public void Disconnect()
         {
             if (this.tcpReader != null)
             {
@@ -78,6 +70,19 @@ namespace Met.Core.Trans
                 ((IDisposable)this.tcpClient).Dispose();
                 this.tcpClient = null;
             }
+        }
+
+        public void Wrap(TcpClient tcpClient)
+        {
+            Disconnect();
+            this.tcpClient = tcpClient;
+            this.tcpStream = this.tcpClient.GetStream();
+            this.tcpReader = new BinaryReader(this.tcpStream);
+        }
+
+        public void Dispose()
+        {
+            Disconnect();
         }
 
         public Packet ReceivePacket(PacketEncryptor packetEncryptor)

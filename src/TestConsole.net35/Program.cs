@@ -4,26 +4,65 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Net.Security;
 using System.Net.Sockets;
 using System.Reflection;
+using System.Security.Cryptography.X509Certificates;
 
 namespace TestConsole
 {
     class Program
     {
+        static string host = @"192.168.146.156";
+
         static void Main(string[] args)
         {
             //SimpleTcpStageTest();
-            SimpleHttpStageTest();
+            //SimpleHttpStageTest();
+            SimpleHttpsStageTest();
+        }
+
+        static void SimpleHttpsStageTest()
+        {
+#if NET40
+            var port = 4451;
+            var uri = @"/WJUTxSMP805Bf0BhHAA0Og8n8WXPvqO7QO635HTAludi6E5_RaHi30yFOkcr23WTgJhkE7wzMi_2XJN3A3YBhAjie6uTbvHd-Ryv0I8bNIpb2J1kYlzYSs_";
+#else
+            var port = 4449;
+            var uri = @"/DgpgB6pR-3HmeudnuwLKUghZuMxaWdHo0XuT-ZzO0Xcyv54gGsB7aig4hD2wRV-Q9ulIdw2KZdN497W9kvyMBsey9";
+#endif
+            var scheme = "https";
+            var url = string.Format(@"{0}://{1}:{2}{3}/", scheme, host, port, uri);
+
+            System.Net.ServicePointManager.ServerCertificateValidationCallback += SslValidator;
+
+            var wc = new System.Net.WebClient();
+            var stage = wc.DownloadData(url);
+            System.Net.ServicePointManager.ServerCertificateValidationCallback -= SslValidator;
+            LoadStage(stage, wc);
+        }
+
+        static bool SslValidator(object sender, X509Certificate certificate, X509Chain chain, SslPolicyErrors sslPolicyErrors)
+        {
+            var req = sender as System.Net.HttpWebRequest;
+            if (req != null && req.RequestUri.Host.ToLowerInvariant() == host.ToLowerInvariant())
+            {
+                return true;
+            }
+
+            return SslPolicyErrors.None == sslPolicyErrors;
         }
 
         static void SimpleHttpStageTest()
         {
+#if NET40
+            var port = 4450;
+            var uri = @"/WJUTxSMP805Bf0BhHAA0Og8n8WXPvqO7QO635HTAludi6E5_RaHi30yFOkcr23WTgJhkE7wzMi_2XJN3A3YBhAjie6uTbvHd-Ryv0I8bNIpb2J1kYlzYSs_";
+#else
             var port = 4448;
-            var scheme = "http";
-            var host = @"192.168.146.156";
             var uri = @"/DgpgB6pR-3HmeudnuwLKUghZuMxaWdHo0XuT-ZzO0Xcyv54gGsB7aig4hD2wRV-Q9ulIdw2KZdN497W9kvyMBsey9";
-
+#endif
+            var scheme = "http";
             var url = string.Format(@"{0}://{1}:{2}{3}/", scheme, host, port, uri);
 
             var wc = new System.Net.WebClient();
