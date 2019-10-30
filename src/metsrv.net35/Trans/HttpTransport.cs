@@ -1,6 +1,7 @@
 ﻿using Met.Core.Extensions;
 using Met.Core.Proto;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Net;
 using System.Net.Security;
@@ -16,8 +17,10 @@ namespace Met.Core.Trans
         private const int PROXY_PASS_SIZE = 64;
         private const int CERT_HASH_SIZE = 20;
 
-        private Session session;
-        private WebClient webClient;
+        private Session session = null;
+        private WebClient webClient = null;
+        private bool sslHooked = false;
+        private Queue<Packet> incomingPackets = null;
 
         public TransportConfig Config { get; private set; }
         public string ProxyHost { get; private set; }
@@ -27,12 +30,13 @@ namespace Met.Core.Trans
         public byte[] CertHash { get; private set; }
         public string CustomHeaders { get; private set; }
 
-        public bool IsConnected => true;
+        public bool IsConnected { get; private set; }
 
         public HttpTransport(TransportConfig config, Session session)
         {
             this.Config = config;
             this.session = session;
+            this.incomingPackets = new Queue<Packet>();
         }
 
         public void Configure(BinaryReader reader)
@@ -47,14 +51,27 @@ namespace Met.Core.Trans
 
         public bool Connect()
         {
-            ServicePointManager.ServerCertificateValidationCallback += SslValidator;
-            // Always true
+            AddSslVerificationHook();
+
+            var packet = ReceivePacket();
+
+            if (packet != null)
+            {
+                this.incomingPackets.Enqueue(packet);
+                this.IsConnected = true;
+            }
+            else
+            {
+                RemoveSslVerificationHook();
+            }
+
             return this.IsConnected;
         }
 
         public void Disconnect()
         {
-            ServicePointManager.ServerCertificateValidationCallback -= SslValidator;
+            RemoveSslVerificationHook();
+            this.IsConnected = false;
         }
 
         public void Dispose()
@@ -67,31 +84,102 @@ namespace Met.Core.Trans
             this.webClient = webClient;
         }
 
+        public void GetConfig(ITlv tlv)
+        {
+            this.Config.GetConfig(tlv);
+            if (!string.IsNullOrEmpty(this.UserAgent))
+            {
+                tlv.Add(TlvType.TransUa, this.UserAgent);
+            }
+
+            if (!string.IsNullOrEmpty(this.ProxyHost))
+            {
+                tlv.Add(TlvType.TransProxyHost, this.ProxyHost);
+            }
+
+            if (!string.IsNullOrEmpty(this.ProxyUser))
+            {
+                tlv.Add(TlvType.TransProxyUser, this.ProxyUser);
+            }
+
+            if (!string.IsNullOrEmpty(this.ProxyPass))
+            {
+                tlv.Add(TlvType.TransProxyPass, this.ProxyPass);
+            }
+
+            if (!string.IsNullOrEmpty(this.CustomHeaders))
+            {
+                tlv.Add(TlvType.TransHeaders, this.CustomHeaders);
+            }
+
+            if (this.CertHash != null)
+            {
+                tlv.Add(TlvType.TransCertHash, this.CertHash);
+            }
+        }
+
+        public Packet ReceivePacket()
+        {
+            return ReceivePacket(null);
+        }
+
         public Packet ReceivePacket(PacketEncryptor packetEncryptor)
         {
-            var tlvData = this.webClient.DownloadData(this.Config.Uri);
-            var delay = 0;
-            var failCount = 0;
-
-            while (tlvData.Length == 0)
+            if (this.incomingPackets.Count > 0)
             {
-                delay = 10 * failCount;
-                ++failCount;
-                System.Threading.Thread.Sleep(Math.Min(10000, delay));
-                tlvData = this.webClient.DownloadData(this.Config.Uri);
+                return this.incomingPackets.Dequeue();
             }
 
-            using (var tlvStream = new MemoryStream(tlvData))
-            using (var reader = new BinaryReader(tlvStream))
+            try
             {
-                return new Packet(reader, packetEncryptor);
+                var tlvData = this.webClient.DownloadData(this.Config.Uri);
+                var delay = 0;
+                var failCount = 0;
+
+                while (tlvData.Length == 0)
+                {
+                    delay = 10 * failCount;
+                    ++failCount;
+                    System.Threading.Thread.Sleep(Math.Min(10000, delay));
+                    tlvData = this.webClient.DownloadData(this.Config.Uri);
+                }
+
+                using (var tlvStream = new MemoryStream(tlvData))
+                using (var reader = new BinaryReader(tlvStream))
+                {
+                    return new Packet(reader, packetEncryptor);
+                }
             }
+            catch(Exception e)
+            {
+                // something went wrong, bail out
+            }
+
+            return null;
         }
 
         public void SendPacket(byte[] responsePacket)
         {
             var wc = CreateWebClient();
             wc.UploadData(this.Config.Uri, responsePacket);
+        }
+
+        private void AddSslVerificationHook()
+        {
+            if (!this.sslHooked)
+            {
+                ServicePointManager.ServerCertificateValidationCallback += SslValidator;
+                this.sslHooked = true;
+            }
+        }
+
+        private void RemoveSslVerificationHook()
+        {
+            if (this.sslHooked)
+            {
+                ServicePointManager.ServerCertificateValidationCallback -= SslValidator;
+                this.sslHooked = false;
+            }
         }
 
         private WebClient CreateWebClient()

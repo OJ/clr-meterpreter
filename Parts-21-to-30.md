@@ -66,3 +66,15 @@ Tonight we finished off support for HTTP and HTTPS transports in both CLR 2 and 
 There's still more to do, and we'll aim to cover that off in the next stream. The first thing we'll do is add certificate hash validation to SSL so that we know we're close to feature parity with the native version. We also need to finish wiring in (and testing) other properties such as user agents (which we missed on tonight's stream). Oh well, such is life!
 
 [MSF Commit](https://github.com/OJ/metasploit-framework/commit/5aff55f1d0f6cd623733485ca2bf5ac7cb988540) - [Vimeo](https://vimeo.com/360255369) - [YouTube](https://youtu.be/Nn92F9uLo3Y)
+
+# Part 29 - 30 October 2019 @ 19:30 AEST
+
+After well over a month we got back into some development, and I think it went really well. The plan was to work through transport-related stuff after getting HTTP/HTTPS transprots working last time.
+
+First up, we made sure that our transports were able to support resiliency. This means that MSF can go down and the transports are able to correctly reconnect to the listeners when they come back up.
+
+Once we had that in place, the aim was to move closer to the "transport add" functionality, but it made sense to add "transport list" first because we could use that for debugging. We got that done with a little bit of refactoring!
+
+Next stream we'll aim to finalise the transport commands, and from there we may be in a position to get started on channels!
+
+[Vimeo](https://vimeo.com/369797347) - [YouTube](https://youtu.be/klMWcViWWgs)

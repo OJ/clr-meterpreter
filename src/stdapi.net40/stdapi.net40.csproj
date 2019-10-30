@@ -68,6 +68,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y $(TargetPath) Z:\scratch\</PostBuildEvent>
+    <PostBuildEvent>copy /y $(TargetPath) Z:\meterpreter.net\</PostBuildEvent>
   </PropertyGroup>
 </Project>

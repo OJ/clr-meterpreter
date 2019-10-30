@@ -25,7 +25,7 @@ namespace Met.Core.Proto
         PlainResponse = 11u
     }
 
-    public class Packet
+    public class Packet : ITlv
     {
         private const int HEADER_SIZE = 4 + 16 + 4 + 4 + 4;
         private const int ENC_LENGTH = 20;
@@ -104,6 +104,8 @@ namespace Met.Core.Proto
             XorBytes(xorKey, ref packetBody);
             if (encrypted)
             {
+                // TODO: if we don't have a packet encryptor, then we should probably
+                // bail out.
                 packetBody = packetEncryptor.AesDecrypt(packetBody);
             }
 

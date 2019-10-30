@@ -102,6 +102,9 @@
     <Compile Include="..\metsrv.net35\PluginManager.cs">
       <Link>PluginManager.cs</Link>
     </Compile>
+    <Compile Include="..\metsrv.net35\Proto\ITlv.cs">
+      <Link>Proto\ITlv.cs</Link>
+    </Compile>
     <Compile Include="..\metsrv.net35\Proto\Packet.cs">
       <Link>Proto\Packet.cs</Link>
     </Compile>
@@ -133,6 +136,6 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>copy /y $(TargetPath) Z:\scratch\</PostBuildEvent>
+    <PostBuildEvent>copy /y $(TargetPath) Z:\meterpreter.net\</PostBuildEvent>
   </PropertyGroup>
 </Project>

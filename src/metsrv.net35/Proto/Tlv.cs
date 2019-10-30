@@ -151,7 +151,7 @@ namespace Met.Core.Proto
         StdapiPowerReason= MetaType.Uint | (StdapiPlugin + 4101u),
     }
 
-    public class Tlv
+    public class Tlv : ITlv
     {
         private object value = null;
         public TlvType Type { get; set; }
@@ -408,6 +408,18 @@ namespace Met.Core.Proto
             ValidateMetaType(MetaType.Group);
             return this.Add(new Tlv(type));
         }
+
+        public Tlv Add<T>(TlvType type, T value) where T : struct
+        {
+            var meta = type.ToMetaType();
+            if (meta != MetaType.Raw && meta != MetaType.Complex)
+            {
+                throw new ArgumentException(string.Format("Unable to serialise struct to type: {0}", meta));
+            }
+
+            return this.Add(new Tlv(type, value.ToByteArray()));
+        }
+
 
         public Tlv Add(Tlv tlv)
         {

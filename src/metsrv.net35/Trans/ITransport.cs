@@ -15,5 +15,6 @@ namespace Met.Core.Trans
 
         Packet ReceivePacket(PacketEncryptor packetEncryptor);
         void SendPacket(byte[] responsePacket);
+        void GetConfig(ITlv tlv);
     }
 }

@@ -40,10 +40,19 @@ namespace Met.Core.Trans
             if (!this.IsConnected)
             {
                 var client = new TcpClient();
-                client.Connect(this.Config.Uri.Host, this.Config.Uri.Port);
-                if (client.Connected)
+
+                try
                 {
-                    this.Wrap(client);
+                    client.Connect(this.Config.Uri.Host, this.Config.Uri.Port);
+                    if (client.Connected)
+                    {
+                        this.Wrap(client);
+                    }
+                }
+                catch
+                {
+                    // something went wrong connecting, so assume we haven't succeeded
+                    // and just move on with the transport retry/handle functionality
                 }
             }
 
@@ -85,9 +94,32 @@ namespace Met.Core.Trans
             Disconnect();
         }
 
+        public void GetConfig(ITlv tlv)
+        {
+            this.Config.GetConfig(tlv);
+        }
+
         public Packet ReceivePacket(PacketEncryptor packetEncryptor)
         {
-            return new Packet(this.tcpReader, packetEncryptor);
+            try
+            {
+                var peekBuffer = new byte[4];
+                if (this.tcpClient.Client.Receive(peekBuffer, SocketFlags.Peek) == peekBuffer.Length)
+                {
+                    if (peekBuffer[peekBuffer.Length - 1] == 0)
+                    {
+                        FlushStage();
+                    }
+                }
+
+                return new Packet(this.tcpReader, packetEncryptor);
+            }
+            catch
+            {
+                // The transport may have bailed while we were trying to read, so return null
+                // to indicate a transport error.
+            }
+            return null;
         }
 
         public void SendPacket(byte[] responsePacket)
@@ -96,6 +128,12 @@ namespace Met.Core.Trans
             {
                 this.tcpStream.Write(responsePacket, 0, responsePacket.Length);
             }
+        }
+
+        private void FlushStage()
+        {
+            var size = this.tcpReader.ReadInt32();
+            this.tcpReader.ReadBytes(size);
         }
     }
 }

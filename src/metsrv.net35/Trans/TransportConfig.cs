@@ -1,4 +1,5 @@
 ﻿using Met.Core.Extensions;
+using Met.Core.Proto;
 using System;
 using System.IO;
 
@@ -21,6 +22,14 @@ namespace Met.Core.Trans
             this.RetryTotal = reader.ReadUInt32();
             this.RetryWait = reader.ReadUInt32();
             this.Uri = new Uri(this.Url);
+        }
+
+        public void GetConfig(ITlv tlv)
+        {
+            tlv.Add(TlvType.TransUrl, this.Url);
+            tlv.Add(TlvType.TransCommTimeout, CommsTimeout);
+            tlv.Add(TlvType.TransRetryTotal, RetryTotal);
+            tlv.Add(TlvType.TransRetryWait, RetryWait);
         }
 
         public ITransport CreateTransport(Session session)

@@ -100,7 +100,7 @@ namespace Met.Core
                     while (transportExpiry > DateTime.UtcNow && !this.currentTransport.Connect())
                     {
                         // Sleep for the requisite timeout between reconnect attempts
-                        Thread.Sleep((int)this.currentTransport.Config.RetryWait + 1000);
+                        Thread.Sleep((int)this.currentTransport.Config.RetryWait * 1000);
                         CheckSessionExpiry();
                     }
 
@@ -166,9 +166,24 @@ namespace Met.Core
             this.pluginManager.RegisterFunction(string.Empty, "core_shutdown", true, this.CoreShutdown);
             this.pluginManager.RegisterFunction(string.Empty, "core_negotiate_tlv_encryption", false, this.CoreNegotiateTlvEncryption);
             this.pluginManager.RegisterFunction(string.Empty, "core_transport_set_timeouts", false, this.TransportSetTimeouts);
+            this.pluginManager.RegisterFunction(string.Empty, "core_transport_list", false, this.TransportList);
             this.pluginManager.RegisterFunction(string.Empty, "core_get_session_guid", false, this.CoreGetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_session_guid", false, this.CoreSetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_uuid", false, this.CoreSetUuid);
+        }
+
+        private InlineProcessingResult TransportList(Packet request, Packet response)
+        {
+            response.Add(TlvType.TransSessExp, (uint)(this.Session.Expiry - DateTime.UtcNow).TotalSeconds);
+
+            foreach (var transport in this.Transports)
+            {
+                transport.GetConfig(response.AddGroup(TlvType.TransGroup));
+            }
+
+            response.Result = PacketResult.Success;
+
+            return InlineProcessingResult.Continue;
         }
 
         private InlineProcessingResult TransportSetTimeouts(Packet request, Packet response)
@@ -196,9 +211,7 @@ namespace Met.Core
             }
 
             response.Add(TlvType.TransSessExp, (uint)(this.Session.Expiry - DateTime.UtcNow).TotalSeconds);
-            response.Add(TlvType.TransCommTimeout, this.currentTransport.Config.CommsTimeout);
-            response.Add(TlvType.TransRetryTotal, this.currentTransport.Config.RetryTotal);
-            response.Add(TlvType.TransRetryWait, this.currentTransport.Config.RetryWait);
+            this.currentTransport.Config.GetConfig(response);
 
             response.Result = PacketResult.Success;
 
