@@ -78,3 +78,11 @@ Once we had that in place, the aim was to move closer to the "transport add" fun
 Next stream we'll aim to finalise the transport commands, and from there we may be in a position to get started on channels!
 
 [Vimeo](https://vimeo.com/369797347) - [YouTube](https://youtu.be/klMWcViWWgs)
+
+# Part 30 - 07 November 2019 @ 09:00 AEST
+
+Today we implemented `bind_tcp`, and made sure that it worked as a "resilient" transport. From there we added support to add transports on the fly (of all types) and also validated that they get invoked correctly when transports fail (so that they rollover as you would expect).
+
+We may have to quickly address the listing functionality to make sure that what's shown is indicative of what's going on behind the scenes. We'll cover that in the next stream when we add support for removing transports.
+
+[MSF Commit](https://github.com/OJ/metasploit-framework/commit/7708060c8444e6f1b01cca95334b0aa2ef8e4a55) - [Vimeo](https://vimeo.com/371523266) - [YouTube](https://youtu.be/uCTdsL14c8c)

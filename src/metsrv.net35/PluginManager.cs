@@ -10,6 +10,7 @@ namespace Met.Core
     public enum InlineProcessingResult
     {
         Continue,
+        PrevTransport,
         NextTransport,
         Shutdown
     }

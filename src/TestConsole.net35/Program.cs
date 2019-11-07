@@ -1,7 +1,4 @@
-﻿//using Met.Core;
-//using Met.Core.Proto;
-//using Met.Core.Trans;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Net.Security;
@@ -17,9 +14,10 @@ namespace TestConsole
 
         static void Main(string[] args)
         {
-            //SimpleTcpStageTest();
+            SimpleBindTcpStageTest();
+            //SimpleReverseTcpStageTest();
             //SimpleHttpStageTest();
-            SimpleHttpsStageTest();
+            //SimpleHttpsStageTest();
         }
 
         static void SimpleHttpsStageTest()
@@ -70,7 +68,26 @@ namespace TestConsole
             LoadStage(stage, wc);
         }
 
-        static void SimpleTcpStageTest()
+        static void SimpleBindTcpStageTest()
+        {
+            var port = 4444;
+            var tcpListener = new TcpListener(System.Net.IPAddress.Any, port);
+            tcpListener.Start(1);
+            var tcpClient = tcpListener.AcceptTcpClient();
+            if (tcpClient != null && tcpClient.Connected)
+            {
+                tcpListener.Stop();
+                using (var s = tcpClient.GetStream())
+                using (var r = new BinaryReader(s))
+                {
+                    var fullStageSize = r.ReadInt32();
+                    var fullStage = r.ReadBytes(fullStageSize);
+                    LoadStage(fullStage, tcpClient);
+                }
+            }
+        }
+
+        static void SimpleReverseTcpStageTest()
         {
             var tcpClient = new TcpClient();
 #if NET40

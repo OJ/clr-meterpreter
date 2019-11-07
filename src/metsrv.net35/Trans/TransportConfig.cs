@@ -16,12 +16,30 @@ namespace Met.Core.Trans
         public UInt32 RetryWait { get; set; }
 
         public TransportConfig(BinaryReader reader)
+            : this(reader.ReadWideString(URL_SIZE),
+                reader.ReadUInt32(),
+                reader.ReadUInt32(),
+                reader.ReadUInt32())
         {
-            this.Url = reader.ReadWideString(URL_SIZE);
-            this.CommsTimeout = reader.ReadUInt32();
-            this.RetryTotal = reader.ReadUInt32();
-            this.RetryWait = reader.ReadUInt32();
-            this.Uri = new Uri(this.Url);
+        }
+
+        public TransportConfig(string url, uint commsTimeout, uint retryTotal, uint retryWait)
+        {
+            this.Url = url;
+            this.CommsTimeout = commsTimeout;
+            this.RetryTotal = retryTotal;
+            this.RetryWait = retryWait;
+
+            try
+            {
+                this.Uri = new Uri(this.Url);
+            }
+            catch (UriFormatException)
+            {
+                var p = this.Url.Split(':');
+                url = string.Format("{0}:{1}{2}:{3}", p[0], p[1], System.Net.IPAddress.Any, p[2]);
+                this.Uri = new Uri(url);
+            }
         }
 
         public void GetConfig(ITlv tlv)

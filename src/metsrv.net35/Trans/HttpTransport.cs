@@ -32,11 +32,29 @@ namespace Met.Core.Trans
 
         public bool IsConnected { get; private set; }
 
+        private WebClient WebClient
+        {
+            get
+            {
+                return this.webClient = this.webClient ?? CreateWebClient();
+            }
+        }
+
         public HttpTransport(TransportConfig config, Session session)
         {
             this.Config = config;
             this.session = session;
             this.incomingPackets = new Queue<Packet>();
+        }
+
+        public void Configure(Packet request)
+        {
+            this.ProxyHost = request.Tlvs.TryGetTlvValueAsString(TlvType.TransProxyHost);
+            this.ProxyUser = request.Tlvs.TryGetTlvValueAsString(TlvType.TransProxyUser);
+            this.ProxyPass = request.Tlvs.TryGetTlvValueAsString(TlvType.TransProxyPass);
+            this.UserAgent = request.Tlvs.TryGetTlvValueAsString(TlvType.TransUa);
+            this.CertHash = request.Tlvs.TryGetTlvValueAsRaw(TlvType.TransCertHash);
+            this.CustomHeaders = request.Tlvs.TryGetTlvValueAsString(TlvType.TransHeaders);
         }
 
         public void Configure(BinaryReader reader)
@@ -132,7 +150,7 @@ namespace Met.Core.Trans
 
             try
             {
-                var tlvData = this.webClient.DownloadData(this.Config.Uri);
+                var tlvData = this.WebClient.DownloadData(this.Config.Uri);
                 var delay = 0;
                 var failCount = 0;
 
@@ -141,7 +159,7 @@ namespace Met.Core.Trans
                     delay = 10 * failCount;
                     ++failCount;
                     System.Threading.Thread.Sleep(Math.Min(10000, delay));
-                    tlvData = this.webClient.DownloadData(this.Config.Uri);
+                    tlvData = this.WebClient.DownloadData(this.Config.Uri);
                 }
 
                 using (var tlvStream = new MemoryStream(tlvData))

@@ -119,6 +119,13 @@ namespace Met.Core
                                 this.currentTransport.Disconnect();
                                 break;
                             }
+                        case InlineProcessingResult.PrevTransport:
+                            {
+                                this.currentTransport.Disconnect();
+                                this.transportIndex = (this.transportIndex - 1 + this.Transports.Count) % this.Transports.Count;
+                                this.currentTransport = this.Transports[this.transportIndex];
+                                break;
+                            }
                         case InlineProcessingResult.NextTransport:
                             {
                                 this.currentTransport.Disconnect();
@@ -167,19 +174,69 @@ namespace Met.Core
             this.pluginManager.RegisterFunction(string.Empty, "core_negotiate_tlv_encryption", false, this.CoreNegotiateTlvEncryption);
             this.pluginManager.RegisterFunction(string.Empty, "core_transport_set_timeouts", false, this.TransportSetTimeouts);
             this.pluginManager.RegisterFunction(string.Empty, "core_transport_list", false, this.TransportList);
+            this.pluginManager.RegisterFunction(string.Empty, "core_transport_add", false, this.TransportAdd);
+            this.pluginManager.RegisterFunction(string.Empty, "core_transport_next", true, this.TransportNext);
+            this.pluginManager.RegisterFunction(string.Empty, "core_transport_prev", true, this.TransportPrev);
             this.pluginManager.RegisterFunction(string.Empty, "core_get_session_guid", false, this.CoreGetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_session_guid", false, this.CoreSetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_uuid", false, this.CoreSetUuid);
+        }
+
+        private InlineProcessingResult TransportNext(Packet request, Packet response)
+        {
+            if (this.Transports.Count == 1)
+            {
+                response.Result = PacketResult.InvalidData;
+                return InlineProcessingResult.Continue;
+            }
+
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.NextTransport;
+        }
+
+        private InlineProcessingResult TransportPrev(Packet request, Packet response)
+        {
+            if (this.Transports.Count == 1)
+            {
+                response.Result = PacketResult.InvalidData;
+                return InlineProcessingResult.Continue;
+            }
+
+            response.Result = PacketResult.Success;
+            return InlineProcessingResult.PrevTransport;
         }
 
         private InlineProcessingResult TransportList(Packet request, Packet response)
         {
             response.Add(TlvType.TransSessExp, (uint)(this.Session.Expiry - DateTime.UtcNow).TotalSeconds);
 
-            foreach (var transport in this.Transports)
+            for (var transportIndex = 0; transportIndex < this.Transports.Count; ++transportIndex)
             {
+                var transport = this.Transports[(transportIndex + this.transportIndex) % this.Transports.Count];
                 transport.GetConfig(response.AddGroup(TlvType.TransGroup));
             }
+
+            response.Result = PacketResult.Success;
+
+            return InlineProcessingResult.Continue;
+        }
+
+        private InlineProcessingResult TransportAdd(Packet request, Packet response)
+        {
+            var transportType = request.Tlvs[TlvType.TransType][0].ValueAsDword();
+            var url = request.Tlvs[TlvType.TransUrl][0].ValueAsString();
+            var commsTimeout = request.Tlvs.TryGetTlvValueAsDword(TlvType.TransCommTimeout);
+            var retryTotal = request.Tlvs.TryGetTlvValueAsDword(TlvType.TransRetryTotal);
+            var retryWait = request.Tlvs.TryGetTlvValueAsDword(TlvType.TransRetryWait);
+
+            commsTimeout = commsTimeout == 0 ? this.currentTransport.Config.CommsTimeout : commsTimeout;
+            retryTotal = retryTotal == 0 ? this.currentTransport.Config.RetryTotal : retryTotal;
+            retryWait = retryWait == 0 ? this.currentTransport.Config.RetryWait : retryWait;
+
+            var config = new TransportConfig(url, commsTimeout, retryTotal, retryWait);
+            var transport = config.CreateTransport(this.Session);
+            transport.Configure(request);
+            this.Transports.Add(transport);
 
             response.Result = PacketResult.Success;
 

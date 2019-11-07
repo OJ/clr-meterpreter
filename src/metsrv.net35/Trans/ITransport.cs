@@ -10,6 +10,7 @@ namespace Met.Core.Trans
         bool IsConnected { get; }
 
         void Configure(BinaryReader reader);
+        void Configure(Packet request);
         bool Connect();
         void Disconnect();
 

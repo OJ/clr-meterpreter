@@ -35,25 +35,42 @@ namespace Met.Core.Trans
             // We don't need to get any other configuration out in TCP transports.
         }
 
+        public void Configure(Packet request)
+        {
+            // We don't need to get any other configuration out in TCP transports.
+        }
+
         public bool Connect()
         {
+            var client = default(TcpClient);
             if (!this.IsConnected)
             {
-                var client = new TcpClient();
-
-                try
+                if (this.Config.Uri.Host == System.Net.IPAddress.Any.ToString())
                 {
-                    client.Connect(this.Config.Uri.Host, this.Config.Uri.Port);
-                    if (client.Connected)
+                    var tcpListener = new TcpListener(System.Net.IPAddress.Any, this.Config.Uri.Port);
+                    tcpListener.Start(1);
+                    client = tcpListener.AcceptTcpClient();
+                    tcpListener.Stop();
+                }
+                else
+                {
+                    client = new TcpClient();
+
+                    try
                     {
-                        this.Wrap(client);
+                        client.Connect(this.Config.Uri.Host, this.Config.Uri.Port);
+                    }
+                    catch
+                    {
+                        // something went wrong connecting, so assume we haven't succeeded
+                        // and just move on with the transport retry/handle functionality
                     }
                 }
-                catch
-                {
-                    // something went wrong connecting, so assume we haven't succeeded
-                    // and just move on with the transport retry/handle functionality
-                }
+            }
+
+            if (client != null && client.Connected)
+            {
+                this.Wrap(client);
             }
 
             return this.IsConnected;
