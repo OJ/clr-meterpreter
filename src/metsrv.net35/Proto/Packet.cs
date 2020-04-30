@@ -49,7 +49,11 @@ namespace Met.Core.Proto
         public PacketResult Result
         {
             get { return (PacketResult)this.Tlvs[TlvType.Result].First().ValueAsDword(); }
-            set { this.Add(TlvType.Result, (UInt32)value); }
+            set
+            {
+                this.Tlvs.Remove(TlvType.Result);
+                this.Add(TlvType.Result, (UInt32)value);
+            }
         }
 
         private RNGCryptoServiceProvider Random

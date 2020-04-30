@@ -177,9 +177,41 @@ namespace Met.Core
             this.pluginManager.RegisterFunction(string.Empty, "core_transport_add", false, this.TransportAdd);
             this.pluginManager.RegisterFunction(string.Empty, "core_transport_next", true, this.TransportNext);
             this.pluginManager.RegisterFunction(string.Empty, "core_transport_prev", true, this.TransportPrev);
+            this.pluginManager.RegisterFunction(string.Empty, "core_transport_remove", true, this.TransportRemove);
             this.pluginManager.RegisterFunction(string.Empty, "core_get_session_guid", false, this.CoreGetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_session_guid", false, this.CoreSetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_uuid", false, this.CoreSetUuid);
+        }
+
+        private InlineProcessingResult TransportRemove(Packet request, Packet response)
+        {
+            var url = request.Tlvs[TlvType.TransUrl][0].ValueAsString();
+            response.Result = PacketResult.BadArguments;
+
+            for (int i = this.Transports.Count - 1; i >= 0; --i)
+            {
+                if (i == this.transportIndex)
+                {
+                    // We are not going to allow removal of the current transport
+                    continue;
+                }
+
+                if (url == this.Transports[i].Config.Url)
+                {
+                    this.Transports.RemoveAt(i);
+
+                    // if we remove something prior to our current transport
+                    // we need to shift the transport index back by 1
+                    if (i < this.transportIndex)
+                    {
+                        this.transportIndex--;
+                    }
+
+                    response.Result = PacketResult.Success;
+                }
+            }
+
+            return InlineProcessingResult.Continue;
         }
 
         private InlineProcessingResult TransportNext(Packet request, Packet response)
@@ -210,9 +242,9 @@ namespace Met.Core
         {
             response.Add(TlvType.TransSessExp, (uint)(this.Session.Expiry - DateTime.UtcNow).TotalSeconds);
 
-            for (var transportIndex = 0; transportIndex < this.Transports.Count; ++transportIndex)
+            for (var index = 0; index < this.Transports.Count; ++index)
             {
-                var transport = this.Transports[(transportIndex + this.transportIndex) % this.Transports.Count];
+                var transport = this.Transports[(index + this.transportIndex) % this.Transports.Count];
                 transport.GetConfig(response.AddGroup(TlvType.TransGroup));
             }
 

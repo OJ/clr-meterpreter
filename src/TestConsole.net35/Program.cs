@@ -10,12 +10,12 @@ namespace TestConsole
 {
     class Program
     {
-        static string host = @"192.168.146.129";
+        static string host = @"192.168.146.140";
 
         static void Main(string[] args)
         {
-            SimpleBindTcpStageTest();
-            //SimpleReverseTcpStageTest();
+            //SimpleBindTcpStageTest();
+            SimpleReverseTcpStageTest();
             //SimpleHttpStageTest();
             //SimpleHttpsStageTest();
         }
