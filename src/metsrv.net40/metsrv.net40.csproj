@@ -39,6 +39,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\metsrv.net35\Channel.cs">
+      <Link>Channel.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\ChannelManager.cs">
+      <Link>ChannelManager.cs</Link>
+    </Compile>
     <Compile Include="..\metsrv.net35\CommandHandler.cs">
       <Link>CommandHandler.cs</Link>
     </Compile>

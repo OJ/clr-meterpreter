@@ -17,16 +17,18 @@ namespace Met.Core
         private PluginManager pluginManager = null;
         private CommandHandler commandHandler = null;
         private PacketEncryptor packetEncryptor = null;
+        private ChannelManager channelManager = null;
 
         private Session Session { get; set; }
         private List<ITransport> Transports { get; set; }
 
         private Server()
         {
-            this.pluginManager = new PluginManager(this.DispatchPacket);
+            this.channelManager = new ChannelManager();
             this.Transports = new List<ITransport>();
             this.commandHandler = new CommandHandler();
             this.packetEncryptor = new PacketEncryptor();
+            this.pluginManager = new PluginManager(this.DispatchPacket, this.channelManager);
 
             this.commandHandler.Register(this.pluginManager);
         }
@@ -181,6 +183,8 @@ namespace Met.Core
             this.pluginManager.RegisterFunction(string.Empty, "core_get_session_guid", false, this.CoreGetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_session_guid", false, this.CoreSetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_uuid", false, this.CoreSetUuid);
+
+            this.channelManager.RegisterCommands(this.pluginManager);
         }
 
         private InlineProcessingResult TransportRemove(Packet request, Packet response)

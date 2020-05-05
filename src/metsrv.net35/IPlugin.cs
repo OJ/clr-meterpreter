@@ -4,7 +4,7 @@
     {
         string Name { get; }
         void Init(byte[] initBytes);
-        void Register(PluginManager manager);
-        void Unregister(PluginManager manager);
+        void Register(PluginManager pluginManager, ChannelManager channelManager);
+        void Unregister(PluginManager pluginManager, ChannelManager channelManager);
     }
 }

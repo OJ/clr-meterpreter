@@ -36,13 +36,14 @@ namespace Met.Core
         private readonly Dictionary<string, FunctionDefinition> handlers = null;
         private readonly Dictionary<string, List<string>> extFunctions = null;
         private readonly Action<Packet> packetDispatcher = null;
+        private readonly ChannelManager channelManager = null;
 
-        public PluginManager(Action<Packet> packetDispatcher)
+        public PluginManager(Action<Packet> packetDispatcher, ChannelManager channelManager)
         {
             this.handlers = new Dictionary<string, FunctionDefinition>();
             this.extFunctions = new Dictionary<string, List<string>>();
             this.packetDispatcher = packetDispatcher;
-
+            this.channelManager = channelManager;
             AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 
             // Internal function registrations
@@ -105,7 +106,7 @@ namespace Met.Core
             if (pluginType != null)
             {
                 var pluginInstance = assembly.CreateInstance(pluginType.FullName) as IPlugin;
-                pluginInstance.Register(this);
+                pluginInstance.Register(this, this.channelManager);
 
                 foreach (var cmd in GetCommandsForExtension(pluginInstance.Name))
                 {

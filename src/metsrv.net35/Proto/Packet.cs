@@ -185,6 +185,11 @@ namespace Met.Core.Proto
             return this.Add(new Tlv(type, value));
         }
 
+        public Tlv Add(TlvType type, Int32 value)
+        {
+            return this.Add(new Tlv(type, (UInt32)value));
+        }
+
         public Tlv Add(TlvType type, UInt32 value)
         {
             return this.Add(new Tlv(type, value));
@@ -193,6 +198,11 @@ namespace Met.Core.Proto
         public Tlv Add(TlvType type, UInt64 value)
         {
             return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, Int64 value)
+        {
+            return this.Add(new Tlv(type, (UInt64)value));
         }
 
         public Tlv Add<T>(TlvType type, T value) where T : struct

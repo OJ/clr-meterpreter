@@ -4,11 +4,11 @@ namespace Met.Stdapi
 {
     public class StdapiPlugin : IPlugin
     {
-        private SysConfig sysConfig;
-        private NetConfig netConfig;
-        private FileSystem fileSystem;
-        private SysProcess sysProcess;
-        private SysPower sysPower;
+        private SysConfig sysConfig = null;
+        private NetConfig netConfig = null;
+        private FileSystem fileSystem = null;
+        private SysProcess sysProcess = null;
+        private SysPower sysPower = null;
 
         public string Name => "stdapi";
 
@@ -25,24 +25,20 @@ namespace Met.Stdapi
         {
         }
 
-        public void Register(PluginManager manager)
+        public void Register(PluginManager pluginManager, ChannelManager channelManager)
         {
-            this.sysConfig.Register(this.Name, manager);
-            this.netConfig.Register(this.Name, manager);
-            this.fileSystem.Register(this.Name, manager);
-            this.sysProcess.Register(this.Name, manager);
-            this.sysPower.Register(this.Name, manager);
-            //manager.RegisterFunction(this.Name, "core_channel_open", false, this.CoreChannelOpen);
+            this.sysConfig.Register(this.Name, pluginManager);
+            this.netConfig.Register(this.Name, pluginManager);
+            this.fileSystem.Register(this.Name, pluginManager);
+            this.sysProcess.Register(this.Name, pluginManager);
+            this.sysPower.Register(this.Name, pluginManager);
+
+            channelManager.RegisterChannelCreator("stdapi_net_tcp_client", Channel.TcpClientChannel.Create);
+            //channelManager.RegisterChannelCreator("stdapi_net_tcp_server", Channel.TcpServerChannel.Create);
         }
 
-        public void Unregister(PluginManager manager)
+        public void Unregister(PluginManager pluginManager, ChannelManager channelManager)
         {
         }
-
-        // TODO: move this to a channel manager of some kind
-        //private InlineProcessingResult CoreChannelOpen(Packet request, Packet response)
-        //{
-        //    return InlineProcessingResult.Continue;
-        //}
     }
 }
