@@ -361,6 +361,15 @@ namespace Met.Core.Proto
             ValidateMetaType(MetaType.Raw, MetaType.Complex);
         }
 
+        public Tlv(TlvType type, byte[] value, int size)
+            : this()
+        {
+            this.Type = type;
+            this.value = new byte[size];
+            Array.Copy(value, (Array)this.value, size);
+            ValidateMetaType(MetaType.Raw, MetaType.Complex);
+        }
+
         public Tlv(TlvType type, bool value)
             : this()
         {
@@ -391,6 +400,12 @@ namespace Met.Core.Proto
         {
             ValidateMetaType(MetaType.Group);
             return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, byte[] value, int size)
+        {
+            ValidateMetaType(MetaType.Group);
+            return this.Add(new Tlv(type, value, size));
         }
 
         public Tlv Add(TlvType type, Int32 value)

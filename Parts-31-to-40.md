@@ -21,3 +21,13 @@ After covering off some of the theory, we got started with code and ended up get
 Next stream we'll try to finalise the data shuffling bit, and add the abstraction that allows us to talk to the channel while its doing the shuffling thing.
 
 [Vimeo](https://vimeo.com/415118815) - [YouTube](https://youtu.be/JgW4ks6L-z4)
+
+# Part 33 - 12 May 2020 @ 20:00 AEST
+
+Good constructive session tonight. The goal was to finalise the reading and writing to and from TCP client channels, and have them function as we would expect from both ends. We were able to achieve this goal! Standard port forwards are now a funcional thing, and they work nicely (as proved by curling and nc).
+
+Handling other types of channels should be easier now that we have this basic infrastructure in place. However, there is still more to do on the TCP client channel before we can put it to bed. Next stream, we'll aim to provide all of the channel options that are available. We also need to make sure that we cater for the error condition where the client isn't able to connect to the target.
+
+Once that's one of the way, we can move on to handling TCP server channels (reverse port forwards), and get going on file and process channels.
+
+[Vimeo](https://vimeo.com/417591044) - [YouTube](https://youtu.be/REU09qYkTrI)

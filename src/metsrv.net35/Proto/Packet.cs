@@ -39,11 +39,21 @@ namespace Met.Core.Proto
         public string RequestId
         {
             get { return this.Tlvs[TlvType.RequestId].First().ValueAsString(); }
+            private set
+            {
+                this.Tlvs.Remove(TlvType.RequestId);
+                this.Add(TlvType.RequestId, value);
+            }
         }
 
         public string Method
         {
             get { return this.Tlvs[TlvType.Method].First().ValueAsString(); }
+            private set
+            {
+                this.Tlvs.Remove(TlvType.Method);
+                this.Add(TlvType.Method, value);
+            }
         }
 
         public PacketResult Result
@@ -74,11 +84,13 @@ namespace Met.Core.Proto
             this.Tlvs = new Dictionary<TlvType, List<Tlv>>();
         }
 
-        //public Packet(byte[] data)
-        //    : this()
-        //{
-        //    ParseData(ref data);
-        //}
+        public Packet(string method)
+            : this()
+        {
+            this.type = PacketType.Request;
+            this.Method = method;
+            this.RequestId = Guid.NewGuid().ToString().Replace("-", "");
+        }
 
         public Packet(BinaryReader reader, PacketEncryptor packetEncryptor)
             : this()
@@ -183,6 +195,11 @@ namespace Met.Core.Proto
         public Tlv Add(TlvType type, byte[] value)
         {
             return this.Add(new Tlv(type, value));
+        }
+
+        public Tlv Add(TlvType type, byte[] value, int size)
+        {
+            return this.Add(new Tlv(type, value, size));
         }
 
         public Tlv Add(TlvType type, Int32 value)

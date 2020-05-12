@@ -24,7 +24,7 @@ namespace Met.Core
 
         private Server()
         {
-            this.channelManager = new ChannelManager();
+            this.channelManager = new ChannelManager(this.DispatchPacket);
             this.Transports = new List<ITransport>();
             this.commandHandler = new CommandHandler();
             this.packetEncryptor = new PacketEncryptor();
