@@ -17,6 +17,10 @@ namespace Met.Core
 
         public event EventHandler ChannelClosed;
 
+        public virtual void Interact(bool interact)
+        {
+        }
+
         public uint ChannelId
         {
             get
@@ -50,7 +54,7 @@ namespace Met.Core
             ChannelClosed?.Invoke(this, new EventArgs());
         }
 
-        public abstract PacketResult Write(Packet request, Packet response);
+        public abstract PacketResult Write(Packet request, Packet response, out int bytesWritten);
         public abstract void Close();
     }
 }

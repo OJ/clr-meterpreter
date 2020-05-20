@@ -30,7 +30,7 @@ namespace Met.Stdapi
             this.sysConfig.Register(this.Name, pluginManager);
             this.netConfig.Register(this.Name, pluginManager);
             this.fileSystem.Register(this.Name, pluginManager);
-            this.sysProcess.Register(this.Name, pluginManager);
+            this.sysProcess.Register(this.Name, pluginManager, channelManager);
             this.sysPower.Register(this.Name, pluginManager);
 
             channelManager.RegisterChannelCreator("stdapi_net_tcp_client", Channel.TcpClientChannel.Create);

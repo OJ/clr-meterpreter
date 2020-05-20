@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Channel\ProcessChannel.cs" />
     <Compile Include="Channel\TcpClientChannel.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="NetConfig.cs" />

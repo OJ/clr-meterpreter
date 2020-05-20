@@ -31,3 +31,17 @@ Handling other types of channels should be easier now that we have this basic in
 Once that's one of the way, we can move on to handling TCP server channels (reverse port forwards), and get going on file and process channels.
 
 [Vimeo](https://vimeo.com/417591044) - [YouTube](https://youtu.be/REU09qYkTrI)
+
+# Part 34 - 19 May 2020 @ 20:00 AEST
+
+So the plan with this session was to bash out the implementation of process channels. The aim was to allow for process execution, and them from there support interactivity via the channel abstraction. This would not only mean we could fire up processes, it would also mean that we would have reworked the channel code to be more abstract to support different channel types.
+
+It started so well! We even managed to merge Metasploit master relatively easily. But we hit a pretty crappy roadblock as soon as we got to handling stdout/stderr from the .NET Process object.
+
+The first couple of hours of the stream were fun and constructive. The latter two hours were a shitfight :D I got angry, frustrated, and tried a bunch of things that didn't work. It was nice that other people were hanging out and helping me work through it, offering suggestions, etc. But they came unstuck with me. We weren't able to get to the bottom of the issue. At midnight I threw in the towel.
+
+I don't like going to bed on a low note. But clearly something ticked over in my head last night, and I woke up this morning with an idea. So, sticking with my rule of making sure that I code everything live on stream, I wrote up a little project locally to play with the problem. While my original idea didn't work, it did lead me down the path of something that DID work.
+
+So on the next stream, I'm going to implement that fix. Together, we can all lament about it.
+
+[Vimeo](https://vimeo.com/420533237) - [YouTube](https://youtu.be/WLNiJWSAVmo)

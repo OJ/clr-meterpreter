@@ -50,17 +50,18 @@ namespace Met.Stdapi.Channel
             }
         }
 
-        public override PacketResult Write(Packet request, Packet response)
+        public override PacketResult Write(Packet request, Packet response, out int bytesWritten)
         {
             var data = request.Tlvs[TlvType.ChannelData][0].ValueAsRaw();
             try
             {
                 this.stream.Write(data, 0, data.Length);
-                response.Add(TlvType.Length, data.Length);
+                bytesWritten = data.Length;
                 return PacketResult.Success;
             }
             catch
             {
+                bytesWritten = 0;
                 // TODO: add a proper result
                 return PacketResult.InvalidData;
             }
@@ -71,22 +72,21 @@ namespace Met.Stdapi.Channel
             this.stream.BeginRead(this.readBuffer, 0, this.readBuffer.Length, SocketReadCompleted, this);
         }
 
-        private static void SocketReadCompleted(IAsyncResult result)
+        private void SocketReadCompleted(IAsyncResult result)
         {
             var connectionClosed = false;
 
-            TcpClientChannel channel = (TcpClientChannel)result.AsyncState;
             try
             {
-                int bytesRead = channel.stream.EndRead(result);
+                int bytesRead = this.stream.EndRead(result);
 
                 if (bytesRead > 0)
                 {
                     var packet = new Packet("core_channel_write");
-                    packet.Add(TlvType.ChannelId, channel.ChannelId);
-                    packet.Add(TlvType.ChannelData, channel.readBuffer, bytesRead);
+                    packet.Add(TlvType.ChannelId, this.ChannelId);
+                    packet.Add(TlvType.ChannelData, this.readBuffer, bytesRead);
 
-                    channel.PacketDispatcher(packet);
+                    this.PacketDispatcher(packet);
                 }
                 else
                 {
@@ -102,15 +102,15 @@ namespace Met.Stdapi.Channel
 
             if (connectionClosed)
             {
-                if (!channel.closing)
+                if (!this.closing)
                 {
-                    channel.FireClosedEvent();
-                    channel.Close();
+                    this.FireClosedEvent();
+                    this.Close();
                 }
             }
             else
             {
-                channel.BeginRead();
+                this.BeginRead();
             }
         }
 

@@ -11,6 +11,7 @@ namespace Met.Core.Proto
     public enum PacketResult : UInt32
     {
         Success = 0u,
+        InvalidFunction = 1u,
         InvalidData = 13u,
         CallNotImplemented = 120u,
         BadArguments = 160u,

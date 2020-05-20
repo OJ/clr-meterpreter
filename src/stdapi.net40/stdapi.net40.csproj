@@ -40,6 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\stdapi.net35\Channel\ProcessChannel.cs">
+      <Link>Channel\ProcessChannel.cs</Link>
+    </Compile>
     <Compile Include="..\stdapi.net35\Channel\TcpClientChannel.cs">
       <Link>Channel\TcpClientChannel.cs</Link>
     </Compile>
