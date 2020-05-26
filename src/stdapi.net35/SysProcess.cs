@@ -56,7 +56,7 @@ namespace Met.Stdapi
 
                 if (flags.HasFlag(ProcessExecutionFlags.Channelized))
                 {
-                    processChannel = new ProcessChannel(channelManager.PacketDispatcher, newProcess);
+                    processChannel = new ProcessChannel(channelManager, newProcess);
                     this.channelManager.Manage(processChannel);
                 }
 

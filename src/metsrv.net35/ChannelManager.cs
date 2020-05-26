@@ -7,19 +7,19 @@ namespace Met.Core
 {
     public class ChannelManager
     {
-        private Dictionary<string, Func<Action<Packet>, Packet, Packet, Channel>> channelCreators = null;
+        private Dictionary<string, Func<ChannelManager, Packet, Packet, Channel>> channelCreators = null;
         private Dictionary<uint, Channel> activeChannels = null;
 
-        public Action<Packet> PacketDispatcher { get; private set; }
+        private Action<Packet> packetDispatcher;
 
         public ChannelManager(Action<Packet> packetDispatcher)
         {
-            this.channelCreators = new Dictionary<string, Func<Action<Packet>, Packet, Packet, Channel>>();
+            this.channelCreators = new Dictionary<string, Func<ChannelManager, Packet, Packet, Channel>>();
             this.activeChannels = new Dictionary<uint, Channel>();
-            this.PacketDispatcher = packetDispatcher;
+            this.packetDispatcher = packetDispatcher;
         }
 
-        public void RegisterChannelCreator(string channelType, Func<Action<Packet>, Packet, Packet, Channel> handler)
+        public void RegisterChannelCreator(string channelType, Func<ChannelManager, Packet, Packet, Channel> handler)
         {
             this.channelCreators[channelType] = handler;
         }
@@ -36,6 +36,11 @@ namespace Met.Core
         {
             this.activeChannels[channel.ChannelId] = channel;
             channel.ChannelClosed += ChannelClosed;
+        }
+
+        public void Dispatch(Packet packet)
+        {
+            this.packetDispatcher(packet);
         }
 
         private InlineProcessingResult ChannelInteract(Packet request, Packet response)
@@ -91,11 +96,11 @@ namespace Met.Core
         {
             response.Result = PacketResult.CallNotImplemented;
             var channelType = request.Tlvs.TryGetTlvValueAsString(TlvType.ChannelType);
-            Func<Action<Packet>, Packet, Packet, Channel> handler = null;
+            Func<ChannelManager, Packet, Packet, Channel> handler = null;
 
             if (this.channelCreators.TryGetValue(channelType, out handler))
             {
-                var newChannel = handler(this.PacketDispatcher, request, response);
+                var newChannel = handler(this, request, response);
 
                 if (newChannel != null)
                 {
@@ -103,6 +108,10 @@ namespace Met.Core
                     response.Add(TlvType.ChannelId, newChannel.ChannelId);
                     response.Result = PacketResult.Success;
                 }
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine(string.Format("[core_channel_open] unable to create type {0}", channelType));
             }
             return InlineProcessingResult.Continue;
         }
@@ -112,7 +121,7 @@ namespace Met.Core
             var channel = (Channel)sender;
             var packet = new Packet("core_channel_close");
             packet.Add(TlvType.ChannelId, channel.ChannelId);
-            this.PacketDispatcher(packet);
+            this.Dispatch(packet);
             this.activeChannels.Remove(channel.ChannelId);
         }
     }

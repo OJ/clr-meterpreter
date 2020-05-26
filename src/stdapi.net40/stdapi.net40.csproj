@@ -46,6 +46,9 @@
     <Compile Include="..\stdapi.net35\Channel\TcpClientChannel.cs">
       <Link>Channel\TcpClientChannel.cs</Link>
     </Compile>
+    <Compile Include="..\stdapi.net35\Channel\TcpServerChannel.cs">
+      <Link>Channel\TcpServerChannel.cs</Link>
+    </Compile>
     <Compile Include="..\stdapi.net35\FileSystem.cs">
       <Link>FileSystem.cs</Link>
     </Compile>

@@ -10,7 +10,7 @@ namespace Met.Core
         private object idLock = new object();
         private uint? channelId = null;
 
-        protected Action<Packet> PacketDispatcher
+        protected ChannelManager ChannelManager
         {
             get; private set;
         }
@@ -44,9 +44,9 @@ namespace Met.Core
             }
         }
 
-        protected Channel(Action<Packet> packetDispatcher)
+        protected Channel(ChannelManager channelManager)
         {
-            this.PacketDispatcher = packetDispatcher;
+            this.ChannelManager = channelManager;
         }
 
         protected void FireClosedEvent()

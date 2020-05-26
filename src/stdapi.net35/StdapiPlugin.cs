@@ -34,7 +34,7 @@ namespace Met.Stdapi
             this.sysPower.Register(this.Name, pluginManager);
 
             channelManager.RegisterChannelCreator("stdapi_net_tcp_client", Channel.TcpClientChannel.Create);
-            //channelManager.RegisterChannelCreator("stdapi_net_tcp_server", Channel.TcpServerChannel.Create);
+            channelManager.RegisterChannelCreator("stdapi_net_tcp_server", Channel.TcpServerChannel.Create);
         }
 
         public void Unregister(PluginManager pluginManager, ChannelManager channelManager)

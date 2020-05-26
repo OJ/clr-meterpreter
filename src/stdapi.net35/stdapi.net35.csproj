@@ -41,6 +41,7 @@
   <ItemGroup>
     <Compile Include="Channel\ProcessChannel.cs" />
     <Compile Include="Channel\TcpClientChannel.cs" />
+    <Compile Include="Channel\TcpServerChannel.cs" />
     <Compile Include="FileSystem.cs" />
     <Compile Include="NetConfig.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

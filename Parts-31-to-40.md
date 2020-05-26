@@ -45,3 +45,15 @@ I don't like going to bed on a low note. But clearly something ticked over in my
 So on the next stream, I'm going to implement that fix. Together, we can all lament about it.
 
 [Vimeo](https://vimeo.com/420533237) - [YouTube](https://youtu.be/WLNiJWSAVmo)
+
+# Part 35 - 26 May 2020 @ 20:00 AEST
+
+As promised in the notes on the previous stream, we started this stream by fixing the issues with the process channels we started on the last one. I whipped through it using a sample program I wrote behind the scenes, tidied a few things up and moved on to TCP Server channels.
+
+We managed to get through thoughts without too much pain, which was great. The channels appear to function as they should, even though we haven't done anything with buffering yet.
+
+So on the whole, progress on the channel front is going well. I know that when the time comes to support things like impersonation when creating processes that things will get a little trickier, but for now we'll just ride the small wave of wins.
+
+Up next week? Really not sure! Let's play it by ear.
+
+[Vimeo](https://vimeo.com/422770738) - [YouTube](httpsi//youtu.be/WLNiJWSAVmo)

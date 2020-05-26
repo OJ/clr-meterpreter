@@ -1,5 +1,8 @@
-﻿using Met.Core.Proto;
+﻿using Met.Core;
+using Met.Core.Extensions;
+using Met.Core.Proto;
 using System;
+using System.Net;
 using System.Net.Sockets;
 
 namespace Met.Stdapi.Channel
@@ -16,8 +19,18 @@ namespace Met.Stdapi.Channel
 
         private bool closing = false;
 
-        protected TcpClientChannel(Action<Packet> packetDispatcher, string peerHost, int peerPort, uint flags, uint channelClass, TcpClient tcpClient)
-            : base(packetDispatcher)
+        public string PeerHost
+        {
+            get { return ((IPEndPoint)this.tcpClient.Client.RemoteEndPoint).Address.ToString(); }
+        }
+
+        public int PeerPort
+        {
+            get { return ((IPEndPoint)this.tcpClient.Client.RemoteEndPoint).Port; }
+        }
+
+        protected TcpClientChannel(Core.ChannelManager channelManager, string peerHost, int peerPort, uint flags, uint channelClass, TcpClient tcpClient)
+            : base(channelManager)
         {
             this.peerHost = peerHost;
             this.peerPort = peerPort;
@@ -30,24 +43,33 @@ namespace Met.Stdapi.Channel
             BeginRead();
         }
 
-        public static TcpClientChannel Create(Action<Packet> packetDispatcher, Packet request, Packet response)
+        public static TcpClientChannel Create(Core.ChannelManager channelManager, Packet request, Packet response)
         {
-            var peerHost = request.Tlvs[TlvType.StdapiPeerHost][0].ValueAsString();
-            var peerPort = (int)request.Tlvs[TlvType.StdapiPeerPort][0].ValueAsDword();
-            var flags = request.Tlvs[TlvType.Flags][0].ValueAsDword();
-            var channelClass = request.Tlvs[TlvType.Flags][0].ValueAsDword();
+            var peerHost = request.Tlvs.TryGetTlvValueAsString(TlvType.StdapiPeerHost);
+            var peerPort = (int)request.Tlvs.TryGetTlvValueAsDword(TlvType.StdapiPeerPort);
+            var flags = request.Tlvs.TryGetTlvValueAsDword(TlvType.Flags);
+            var channelClass = request.Tlvs.TryGetTlvValueAsDword(TlvType.ChannelClass);
 
             var tcpClient = new TcpClient();
             try
             {
                 tcpClient.Connect(peerHost, peerPort);
 
-                return new TcpClientChannel(packetDispatcher, peerHost, peerPort, flags, channelClass, tcpClient);
+                return new TcpClientChannel(channelManager, peerHost, peerPort, flags, channelClass, tcpClient);
             }
             catch
             {
                 return null;
             }
+        }
+
+        public static TcpClientChannel Wrap(ChannelManager channelManager, TcpClient client)
+        {
+            var endpoint = (IPEndPoint)client.Client.RemoteEndPoint;
+            var peerHost = endpoint.Address.ToString();
+            var peerPort = endpoint.Port;
+
+            return new TcpClientChannel(channelManager, peerHost, peerPort, 0, 0, client);
         }
 
         public override PacketResult Write(Packet request, Packet response, out int bytesWritten)
@@ -86,7 +108,7 @@ namespace Met.Stdapi.Channel
                     packet.Add(TlvType.ChannelId, this.ChannelId);
                     packet.Add(TlvType.ChannelData, this.readBuffer, bytesRead);
 
-                    this.PacketDispatcher(packet);
+                    this.ChannelManager.Dispatch(packet);
                 }
                 else
                 {
