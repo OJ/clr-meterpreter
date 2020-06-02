@@ -96,16 +96,15 @@ namespace Met.Stdapi.Channel
             this.process.Kill();
         }
 
-        public override PacketResult Write(Packet request, Packet response, out int bytesWritten)
+        protected override PacketResult WriteInternal(byte[] data, int bytesToWrite, out int bytesWritten)
         {
             var result = PacketResult.InvalidData;
-            var bytes = request.Tlvs.TryGetTlvValueAsRaw(TlvType.ChannelData);
             bytesWritten = 0;
 
-            if (bytes != null)
+            if (data != null)
             {
-                this.process.StandardInput.Write(this.process.StandardOutput.CurrentEncoding.GetString(bytes));
-                bytesWritten = bytes.Length;
+                this.process.StandardInput.Write(this.process.StandardOutput.CurrentEncoding.GetString(data));
+                bytesWritten = data.Length;
                 result = PacketResult.Success;
             }
 

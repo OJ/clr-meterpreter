@@ -83,12 +83,5 @@ namespace Met.Stdapi.Channel
         {
             this.listener.Stop();
         }
-
-        public override PacketResult Write(Packet request, Packet response, out int bytesWritten)
-        {
-            // We are not going to do anything
-            bytesWritten = 0;
-            return PacketResult.CallNotImplemented;
-        }
     }
 }

@@ -35,6 +35,7 @@ namespace Met.Stdapi
 
             channelManager.RegisterChannelCreator("stdapi_net_tcp_client", Channel.TcpClientChannel.Create);
             channelManager.RegisterChannelCreator("stdapi_net_tcp_server", Channel.TcpServerChannel.Create);
+            channelManager.RegisterChannelCreator("stdapi_fs_file", Channel.FileChannel.Create);
         }
 
         public void Unregister(PluginManager pluginManager, ChannelManager channelManager)

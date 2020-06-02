@@ -72,9 +72,8 @@ namespace Met.Stdapi.Channel
             return new TcpClientChannel(channelManager, peerHost, peerPort, 0, 0, client);
         }
 
-        public override PacketResult Write(Packet request, Packet response, out int bytesWritten)
+        protected override PacketResult WriteInternal(byte[] data, int bytesToWrite, out int bytesWritten)
         {
-            var data = request.Tlvs[TlvType.ChannelData][0].ValueAsRaw();
             try
             {
                 this.stream.Write(data, 0, data.Length);

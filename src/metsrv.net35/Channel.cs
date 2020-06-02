@@ -1,4 +1,5 @@
 ﻿using System;
+using Met.Core.Extensions;
 using Met.Core.Proto;
 
 namespace Met.Core
@@ -54,7 +55,60 @@ namespace Met.Core
             ChannelClosed?.Invoke(this, new EventArgs());
         }
 
-        public abstract PacketResult Write(Packet request, Packet response, out int bytesWritten);
+        public virtual PacketResult IsEof(Packet request, Packet response)
+        {
+            return PacketResult.CallNotImplemented;
+        }
+
+        public virtual PacketResult Tell(Packet request, Packet response)
+        {
+            return PacketResult.CallNotImplemented;
+        }
+
+        public virtual PacketResult Write(Packet request, Packet response)
+        {
+            var data = request.Tlvs.TryGetTlvValueAsRaw(TlvType.ChannelData);
+            var bytesToWrite = (int)request.Tlvs.TryGetTlvValueAsDword(TlvType.Length);
+            var bytesWritten = default(int);
+            var result = this.WriteInternal(data, bytesToWrite, out bytesWritten);
+
+            if (result == PacketResult.Success)
+            {
+                response.Add(TlvType.Length, bytesWritten);
+            }
+
+            return result;
+        }
+
+        protected virtual PacketResult WriteInternal(byte[] data, int bytesToWrite, out int bytesWritten)
+        {
+            bytesWritten = 0;
+            return PacketResult.CallNotImplemented;
+        }
+
+        public virtual PacketResult Read(Packet request, Packet response)
+        {
+            var bytesToRead = request.Tlvs.TryGetTlvValueAsDword(TlvType.Length);
+            var buffer = new byte[bytesToRead];
+            var bytesRead = default(int);
+            var result = this.ReadInternal(buffer, out bytesRead);
+
+            if (result == PacketResult.Success)
+            {
+                // TODO: handle channel flags/etc
+                response.Add(TlvType.ChannelData, buffer, bytesRead);
+                response.Add(TlvType.Length, bytesRead);
+            }
+
+            return result;
+        }
+
+        protected virtual PacketResult ReadInternal(byte[] buffer, out int bytesRead)
+        {
+            bytesRead = 0;
+            return PacketResult.CallNotImplemented;
+        }
+
         public abstract void Close();
     }
 }

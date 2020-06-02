@@ -57,3 +57,13 @@ So on the whole, progress on the channel front is going well. I know that when t
 Up next week? Really not sure! Let's play it by ear.
 
 [Vimeo](https://vimeo.com/422770738) - [YouTube](httpsi//youtu.be/WLNiJWSAVmo)
+
+# Part 36 - 02 June 2020 @ 20:00 AEST
+
+On this stream we added support for simple "file channels". This allows us to provide the underlying functionality required to drive multiple commands from Metasploit, including `upload`, `download`, `edit` and `cat`. To support this we had to work on our channel abstraction a little and refactor the interface to make it more sane.
+
+It would appear so far that the notion of "class" for a channel indicates what its capabilities are, so next stream we may need to revisit this stuff to make sure we are doing the right thing. We'll probably also make sure that the flags are accurate as well, as I'm still not sure where and how "buffered" vs "sync" channels are used.
+
+Another great turnout with a few new faces. Thoroughly enjoyed it.
+
+[Vimeo](https://vimeo.com/425109674) - [YouTube](https://youtu.be/b9smcKzwj2k)
