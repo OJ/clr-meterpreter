@@ -10,25 +10,27 @@ using System.Threading;
 
 namespace Met.Core
 {
-    public class Server
+    public class Server : IPacketDispatcher
     {
         private ITransport currentTransport = null;
         private int transportIndex = 0;
-        private PluginManager pluginManager = null;
-        private CommandHandler commandHandler = null;
-        private PacketEncryptor packetEncryptor = null;
-        private ChannelManager channelManager = null;
+        private readonly PluginManager pluginManager = null;
+        private readonly PivotManager pivotManager;
+        private readonly CommandHandler commandHandler = null;
+        private readonly PacketEncryptor packetEncryptor = null;
+        private readonly ChannelManager channelManager = null;
 
         private Session Session { get; set; }
         private List<ITransport> Transports { get; set; }
 
         private Server()
         {
-            this.channelManager = new ChannelManager(this.DispatchPacket);
+            this.channelManager = new ChannelManager(this);
             this.Transports = new List<ITransport>();
             this.commandHandler = new CommandHandler();
             this.packetEncryptor = new PacketEncryptor();
-            this.pluginManager = new PluginManager(this.DispatchPacket, this.channelManager);
+            this.pluginManager = new PluginManager(this, this.channelManager);
+            this.pivotManager = new PivotManager(this);
 
             this.commandHandler.Register(this.pluginManager);
         }
@@ -158,16 +160,21 @@ namespace Met.Core
             this.Transports.Clear();
         }
 
-        private void DispatchPacket(Packet packet)
+        public void DispatchPacket(Packet packet)
         {
             var rawPacket = packet.ToRaw(this.Session.SessionGuid, this.packetEncryptor);
 
-            this.currentTransport.SendPacket(rawPacket);
+            this.DispatchPacket(rawPacket);
 
             if (this.packetEncryptor.HasAesKey && !this.packetEncryptor.Enabled)
             {
                 this.packetEncryptor.Enabled = true;
             }
+        }
+
+        public void DispatchPacket(byte[] rawPacket)
+        {
+            this.currentTransport.SendPacket(rawPacket);
         }
 
         private void RegisterServerCommands()
@@ -183,8 +190,10 @@ namespace Met.Core
             this.pluginManager.RegisterFunction(string.Empty, "core_get_session_guid", false, this.CoreGetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_session_guid", false, this.CoreSetSessionGuid);
             this.pluginManager.RegisterFunction(string.Empty, "core_set_uuid", false, this.CoreSetUuid);
+            this.pluginManager.RegisterFunction(string.Empty, "core_pivot_add", false, this.CoreSetUuid);
 
             this.channelManager.RegisterCommands(this.pluginManager);
+            this.pivotManager.RegisterCommands(this.pluginManager);
         }
 
         private InlineProcessingResult TransportRemove(Packet request, Packet response)

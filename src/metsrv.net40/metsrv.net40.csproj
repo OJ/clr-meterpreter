@@ -87,6 +87,9 @@
     <Compile Include="..\metsrv.net35\Helpers.cs">
       <Link>Helpers.cs</Link>
     </Compile>
+    <Compile Include="..\metsrv.net35\IPacketDispatcher.cs">
+      <Link>IPacketDispatcher.cs</Link>
+    </Compile>
     <Compile Include="..\metsrv.net35\IPlugin.cs">
       <Link>IPlugin.cs</Link>
     </Compile>
@@ -104,6 +107,24 @@
     </Compile>
     <Compile Include="..\metsrv.net35\Native\User32.cs">
       <Link>Native\User32.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\PivotManager.cs">
+      <Link>PivotManager.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Pivot\NamedPipePivot.cs">
+      <Link>Pivot\NamedPipePivot.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Pivot\NamedPipePivotListener.cs">
+      <Link>Pivot\NamedPipePivotListener.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Pivot\Pivot.cs">
+      <Link>Pivot\Pivot.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Pivot\PivotEventArgs.cs">
+      <Link>Pivot\PivotEventArgs.cs</Link>
+    </Compile>
+    <Compile Include="..\metsrv.net35\Pivot\PivotListener.cs">
+      <Link>Pivot\PivotListener.cs</Link>
     </Compile>
     <Compile Include="..\metsrv.net35\PluginManager.cs">
       <Link>PluginManager.cs</Link>

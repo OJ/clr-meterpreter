@@ -10,9 +10,9 @@ namespace Met.Core
         private Dictionary<string, Func<ChannelManager, Packet, Packet, Channel>> channelCreators = null;
         private Dictionary<uint, Channel> activeChannels = null;
 
-        private Action<Packet> packetDispatcher;
+        private IPacketDispatcher packetDispatcher;
 
-        public ChannelManager(Action<Packet> packetDispatcher)
+        public ChannelManager(IPacketDispatcher packetDispatcher)
         {
             this.channelCreators = new Dictionary<string, Func<ChannelManager, Packet, Packet, Channel>>();
             this.activeChannels = new Dictionary<uint, Channel>();
@@ -32,6 +32,7 @@ namespace Met.Core
             pluginManager.RegisterFunction(string.Empty, "core_channel_interact", false, this.ChannelInteract);
             pluginManager.RegisterFunction(string.Empty, "core_channel_read", false, this.ChannelRead);
             pluginManager.RegisterFunction(string.Empty, "core_channel_tell", false, this.ChannelTell);
+            pluginManager.RegisterFunction(string.Empty, "core_channel_eof", false, this.ChannelIsEof);
         }
 
         public void Manage(Channel channel)
@@ -42,7 +43,7 @@ namespace Met.Core
 
         public void Dispatch(Packet packet)
         {
-            this.packetDispatcher(packet);
+            this.packetDispatcher.DispatchPacket(packet);
         }
 
         private InlineProcessingResult ChannelAct(Packet request, Packet response, Func<Channel, PacketResult> action)

@@ -35,10 +35,10 @@ namespace Met.Core
 
         private readonly Dictionary<string, FunctionDefinition> handlers = null;
         private readonly Dictionary<string, List<string>> extFunctions = null;
-        private readonly Action<Packet> packetDispatcher = null;
+        private readonly IPacketDispatcher packetDispatcher = null;
         private readonly ChannelManager channelManager = null;
 
-        public PluginManager(Action<Packet> packetDispatcher, ChannelManager channelManager)
+        public PluginManager(IPacketDispatcher packetDispatcher, ChannelManager channelManager)
         {
             this.handlers = new Dictionary<string, FunctionDefinition>();
             this.extFunctions = new Dictionary<string, List<string>>();
@@ -78,7 +78,7 @@ namespace Met.Core
                     var threadStart = new ThreadStart(() =>
                     {
                         fd.Handler(request, response);
-                        this.packetDispatcher(response);
+                        this.packetDispatcher.DispatchPacket(response);
                     });
 
                     var thread = new Thread(threadStart);
@@ -93,7 +93,7 @@ namespace Met.Core
                 response.Result = PacketResult.CallNotImplemented;
             }
 
-            this.packetDispatcher(response);
+            this.packetDispatcher.DispatchPacket(response);
             return result;
         }
 

@@ -39,6 +39,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Channel\AudioOutputChannel.cs" />
     <Compile Include="Channel\FileChannel.cs" />
     <Compile Include="Channel\ProcessChannel.cs" />
     <Compile Include="Channel\TcpClientChannel.cs" />

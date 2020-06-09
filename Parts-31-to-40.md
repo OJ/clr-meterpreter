@@ -67,3 +67,13 @@ It would appear so far that the notion of "class" for a channel indicates what i
 Another great turnout with a few new faces. Thoroughly enjoyed it.
 
 [Vimeo](https://vimeo.com/425109674) - [YouTube](https://youtu.be/b9smcKzwj2k)
+
+# Part 37 - 09 June 2020 @ 20:00 AEST
+
+We started by checking that a few things works as expected (such as recursive downloads). We then properly wired in the EOF check for file streams before implementing the `play` feature. This was a bit of fun and we all got to hear the magical sounds of Batman.
+
+After that, we collectively made the decision to dive into packet pivoting. The beginnings of the infra have been built to make this happen, though we didn't get to the end. We have the ability to listen on Named Pipes and we can even start the staging process. Exciting times.
+
+On the next stream we need to inform MSF of new client connections, handle session guids, and handle the dispatching of packets to different sessions based on their GUIDs. Plenty to do, but should be fun.
+
+[Vimeo](https://vimeo.com/427362794) - [YouTube](https://youtu.be/DuOeCfOQxBQ)

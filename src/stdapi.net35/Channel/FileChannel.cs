@@ -25,18 +25,21 @@ namespace Met.Stdapi.Channel
 
             switch(mode)
             {
+                case "ab":
                 case "abb":
                     {
                         fileMode = FileMode.Append;
                         fileAccess = FileAccess.Write;
                         break;
                     }
+                case "rb":
                 case "rbb":
                     {
                         fileMode = FileMode.Open;
                         fileAccess = FileAccess.Read;
                         break;
                     }
+                case "wb":
                 case "wbb":
                     {
                         fileMode = FileMode.Create;

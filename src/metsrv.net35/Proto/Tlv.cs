@@ -87,8 +87,8 @@ namespace Met.Core.Proto
         EncSymKey = MetaType.Raw | 553u,
         // Pivot TLVs
         PivotId = MetaType.Raw | 650u,
-        PivoteStageData = MetaType.Raw | 651u,
-        PivoteStageDataLen = MetaType.Uint | 652u,
+        PivotStageData = MetaType.Raw | 651u,
+        PivotStageDataLen = MetaType.Uint | 652u,
         PivotNamedPipeName = MetaType.String | 653u,
         // STDAPI stuff
         StdapiPlugin = 0u,
