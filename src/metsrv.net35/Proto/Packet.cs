@@ -93,9 +93,10 @@ namespace Met.Core.Proto
             this.RequestId = Guid.NewGuid().ToString().Replace("-", "");
         }
 
-        public Packet(BinaryReader reader, PacketEncryptor packetEncryptor)
+        public Packet(BinaryReader reader, PacketEncryptor packetEncryptor = null)
             : this()
         {
+            packetEncryptor = packetEncryptor ?? PacketEncryptor.Blank;
             var header = reader.ReadBytes(HEADER_SIZE);
             var packetBody = default(byte[]);
             var xorKey = new byte[4];
@@ -129,9 +130,16 @@ namespace Met.Core.Proto
             ParseData(packetType, ref packetBody);
         }
 
-        public byte[] ToRaw(byte[] sessionGuid, PacketEncryptor packetEncryptor)
+        public byte[] ToRaw(Guid sessionGuid, PacketEncryptor packetEncryptor = null)
+        {
+            return this.ToRaw(sessionGuid.ToByteArray(), packetEncryptor);
+        }
+
+        public byte[] ToRaw(byte[] sessionGuid, PacketEncryptor packetEncryptor = null)
         {
             var packetData = default(byte[]);
+            packetEncryptor = packetEncryptor ?? PacketEncryptor.Blank;
+
             using (var packetStream = new MemoryStream())
             using (var writer = new BinaryWriter(packetStream))
             {

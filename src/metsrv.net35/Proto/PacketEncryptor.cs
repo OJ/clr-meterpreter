@@ -13,6 +13,26 @@ namespace Met.Core.Proto
         private RSACryptoServiceProvider rsa = null;
         private byte[] aesKey;
 
+        private static object blankLock = new object();
+        private static PacketEncryptor blankEncryptor = null;
+        public static PacketEncryptor Blank
+        {
+            get
+            {
+                if (blankEncryptor == null)
+                {
+                    lock(blankLock)
+                    {
+                        if (blankEncryptor == null)
+                        {
+                            blankEncryptor = new PacketEncryptor();
+                        }
+                    }
+                }
+                return blankEncryptor;
+            }
+        }
+
         public PacketEncryptor()
         {
             this.random = new RNGCryptoServiceProvider();

@@ -10,7 +10,7 @@ namespace TestConsole
 {
     class Program
     {
-        static string host = @"192.168.146.133";
+        static string host = @"192.168.146.138";
 
         static void Main(string[] args)
         {

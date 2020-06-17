@@ -77,3 +77,11 @@ After that, we collectively made the decision to dive into packet pivoting. The 
 On the next stream we need to inform MSF of new client connections, handle session guids, and handle the dispatching of packets to different sessions based on their GUIDs. Plenty to do, but should be fun.
 
 [Vimeo](https://vimeo.com/427362794) - [YouTube](https://youtu.be/DuOeCfOQxBQ)
+
+# Part 38 - 17 June 2020 @ 20:00 AEST
+
+The aim of the stream was to finish off the packet pivots. However, this was one of those sessions where things didn't go as intended. It took a bit to get into the vibe, and for some reason I had forgotten to send the size of the stage down the wire when the pipe connection first came in. As a result, we had a little sojourn into debugging native Meterpreter to figure out what was going on. That was fun and educational, but a bit of a distraction.
+
+We ended up not getting it done, thanks to some odd behaviour with NamedPipeServerStream objects wrapped up in BinaryReader objects. For some reason reading a subset of data off the pipe doesn't seem to be working as we would like. This is something that we're going to have to get to the bottom of on the next stream.
+
+[Vimeo](https://vimeo.com/429968828) - [YouTube](https://youtu.be/FjzGMskTPAg)
