@@ -85,3 +85,11 @@ The aim of the stream was to finish off the packet pivots. However, this was one
 We ended up not getting it done, thanks to some odd behaviour with NamedPipeServerStream objects wrapped up in BinaryReader objects. For some reason reading a subset of data off the pipe doesn't seem to be working as we would like. This is something that we're going to have to get to the bottom of on the next stream.
 
 [Vimeo](https://vimeo.com/429968828) - [YouTube](https://youtu.be/FjzGMskTPAg)
+
+# Part 39 - 29 July 2020 @ 20:00 AEST
+
+First time back at streaming for well over a month. Took a bit to get back into the swing of it, but we got to the point where we were able to read packets from the Named Pipe pivot after a bit of mucking around. The code is definitely messy and requires some refactoring, but we're at least at a point where we're able to communicate with both ends of the pivot.
+
+Next stream we're going to finalise this code, make sure that MSF is able to handle the pivoted session, and that the middle agent is able to keep track of the packets and agents that are pivoting through it. From there we can refactor the code to be less messy and move on.
+
+[Vimeo](https://vimeo.com/)442677826 - [YouTube](https://youtu.be/0awhQUW7-7I)

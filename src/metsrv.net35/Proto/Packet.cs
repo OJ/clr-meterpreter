@@ -28,7 +28,7 @@ namespace Met.Core.Proto
 
     public class Packet : ITlv
     {
-        private const int HEADER_SIZE = 4 + 16 + 4 + 4 + 4;
+        public const int HEADER_SIZE = 4 + 16 + 4 + 4 + 4;
         private const int ENC_LENGTH = 20;
         private const int OFFSET_LENGTH = 24;
 
@@ -101,7 +101,7 @@ namespace Met.Core.Proto
             var packetBody = default(byte[]);
             var xorKey = new byte[4];
             Array.Copy(header, xorKey, xorKey.Length);
-            XorBytes(xorKey, ref header);
+            header.Xor(xorKey);
 
             var encrypted = false;
             var packetType = PacketType.Request;
@@ -119,7 +119,7 @@ namespace Met.Core.Proto
                 encrypted = encFlags == PacketEncryptor.ENC_AES256;
             }
 
-            XorBytes(xorKey, ref packetBody);
+            packetBody.Xor(xorKey);
             if (encrypted)
             {
                 // TODO: if we don't have a packet encryptor, then we should probably
@@ -167,8 +167,7 @@ namespace Met.Core.Proto
                 packetData = packetStream.ToArray();
             }
 
-            var xorKey = GenerateXorKey();
-            XorBytes(xorKey, ref packetData);
+            packetData.Xor(GenerateXorKey());
 
             return packetData;
         }
@@ -290,14 +289,6 @@ namespace Met.Core.Proto
                 {
                     Add(new Tlv(reader));
                 }
-            }
-        }
-
-        private void XorBytes(byte[] xorKey, ref byte[] target)
-        {
-            for (int i = 0; i < target.Length; ++i)
-            {
-                target[i] ^= xorKey[i % xorKey.Length];
             }
         }
 

@@ -43,6 +43,7 @@
     <Compile Include="CommandHandler.cs" />
     <Compile Include="Extensions\BinaryReaderExtensions.cs" />
     <Compile Include="Extensions\BinaryWriterExtensions.cs" />
+    <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\FileSystemExtensions.cs" />
     <Compile Include="Extensions\TlvDictionaryExtensions.cs" />

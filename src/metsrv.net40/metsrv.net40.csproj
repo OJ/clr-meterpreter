@@ -54,6 +54,9 @@
     <Compile Include="..\metsrv.net35\Extensions\BinaryWriterExtensions.cs">
       <Link>Extensions\BinaryWriterExtensions.cs</Link>
     </Compile>
+    <Compile Include="..\metsrv.net35\Extensions\ByteArrayExtensions.cs">
+      <Link>Extensions\ByteArrayExtensions.cs</Link>
+    </Compile>
     <Compile Include="..\metsrv.net35\Extensions\DateTimeExtensions.cs">
       <Link>Extensions\DateTimeExtensions.cs</Link>
     </Compile>
